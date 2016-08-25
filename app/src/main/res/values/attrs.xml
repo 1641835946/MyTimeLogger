@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomView">
+        <attr name="tagName" format="string"/>
+        <attr name="nameSize" format="dimension"/>
+        <attr name="duration" format="string"/>
+        <attr name="durationSize" format="dimension"/>
+        <attr name="playPauseIcon" format="reference"/>
+        <attr name="stopIcon" format="reference"/>
+        <attr name="tagIcon" format="reference"/>
+    </declare-styleable>
+</resources>

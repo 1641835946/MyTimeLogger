@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">MyTimeLogger</string>
+    <string name="action_settings">Settings</string>
+    <string name="activities">Activities</string>
+    <string name="list">活动历史清单</string>
+    <string name="chart">饼状界面</string>
+    <string name="tag">标签</string>
+    <string name="more">More</string>
+    <string name="settings">设置</string>
+
+    <string name="dbinspector_app_name">DBInspector</string>
+
+    <string name="play">play</string>
+    <string name="pause">pause</string>
+    <string name="stop">stop</string>
+
+    <string name="db_name">TimeLoggerDB</string>
+    <string name="table_tag">Tag</string>
+    <string name="table_set">Set</string>
+    <string name="table_activity">Activity</string>
+    <string name="table_order">Order</string>
+    <string name="tag_name">name</string>
+    <string name="tag_color">color</string>
+    <string name="tag_icon">icon</string>
+    <string name="set_state">state</string>
+    <string name="set_tag">tag</string>
+    <string name="set_commit">commit</string>
+    <string name="duration">duration</string>
+    <string name="begin_year">beginYear</string>
+    <string name="begin_mouth">beginMouth</string>
+    <string name="begin_day">beginDay</string>
+    <string name="begin_hour">beginHour</string>
+    <string name="begin_minute">beginMinute</string>
+    <string name="begin_second">beginSecond</string>
+    <string name="end_year">endYear</string>
+    <string name="end_mouth">endMouth</string>
+    <string name="end_day">endDay</string>
+    <string name="end_hour">endHour</string>
+    <string name="end_minute">endMinute</string>
+    <string name="end_second">endSecond</string>
+    <string name="activity_id">setId</string>
+    <string name="order_tag">orderTag</string>
+</resources>
