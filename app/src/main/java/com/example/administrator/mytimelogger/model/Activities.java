@@ -10,6 +10,14 @@ public class Activities {
     private Time endTime;
     private long duration;
 
+    public Activities() {}
+    public Activities(int setId, Time beginTime, Time endTime, long duration) {
+        this.beginTime = beginTime;
+        this.endTime = endTime;
+        this.duration = duration;
+        this.setId = setId;
+    }
+
     public int getSetId() {
         return setId;
     }

@@ -1,21 +1,13 @@
 package com.example.administrator.mytimelogger;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.administrator.mytimelogger.util.DurationView;
+import com.example.administrator.mytimelogger.util.SmallUtil;
 
 /**
  * Created by Administrator on 2016/8/24.
@@ -25,7 +17,7 @@ public class CustomView extends RelativeLayout {
     private float nameSize = 10;
     private TextView tagNameTv;
     private float durationSize = 10;
-    private DurationView durationTv;
+    private TextView durationTv;
     private String duration = "00:00:00";
     private int playPauseIcon = R.drawable.resume_btn;
     private Button playBtn;
@@ -39,7 +31,7 @@ public class CustomView extends RelativeLayout {
     private LayoutParams durationParams;
     private controlClick mListener;
     private int iconSize = 90;
-    private int margin = 10;
+    private int margin = 20;
     private boolean doing = false;
 
     //index是用于子控件的setId();是指第几个组合控件。
@@ -63,10 +55,10 @@ public class CustomView extends RelativeLayout {
     private void init(Context context, int index, String tagName, int tagIcon) {
         tagIconIv = new ImageView(context);
         tagNameTv = new TextView(context);
-        durationTv = new DurationView(context);
+        durationTv = new TextView(context);
         playBtn = new Button(context);
         stopBtn = new Button(context);
-        tagIconIv.setId(100*index);
+        tagIconIv.setId(100 * index);
         tagNameTv.setId(100 * index + 1);
         durationTv.setId(100 * index + 2);
         playBtn.setId(100 * index + 3);
@@ -92,8 +84,9 @@ public class CustomView extends RelativeLayout {
         nameParams.addRule(RelativeLayout.RIGHT_OF, tagIconIv.getId());
         addView(tagNameTv, nameParams);
 
-        durationParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        durationParams.leftMargin = margin;
+        int width = SmallUtil.getScreenSize(context).widthPixels;
+        durationParams = new LayoutParams(width-(5*margin + 3*iconSize), LayoutParams.WRAP_CONTENT);
+        //durationParams.leftMargin = margin;
         durationParams.topMargin = margin;
         durationParams.bottomMargin = margin;
         durationParams.addRule(RelativeLayout.BELOW, tagNameTv.getId());
@@ -116,14 +109,14 @@ public class CustomView extends RelativeLayout {
         playBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.playPauseClick();
+                mListener.playPauseClick(view);
             }
         });
 
         stopBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.stopClick();
+                mListener.stopClick(view);
             }
         });
     }
@@ -152,22 +145,22 @@ public class CustomView extends RelativeLayout {
     }
 
     public interface controlClick {
-        void playPauseClick();
-        void stopClick();
-        void onItemClick();
+        void playPauseClick(View view);
+        void stopClick(View view);
+        //void onItemClick(MotionEvent event, View view);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        mListener.onItemClick();
-        return true;//是否要分情况return。
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        mListener.onItemClick(event, this);
+//        return true;//是否要分情况return。
+//    }
 
-    public DurationView getDurationTv() {
+    public TextView getDurationTv() {
         return durationTv;
     }
 
-    public void setDurationTv(DurationView durationTv) {
+    public void setDurationTv(TextView durationTv) {
         this.durationTv = durationTv;
     }
 
@@ -186,7 +179,7 @@ public class CustomView extends RelativeLayout {
             durationTv.setText("liangjie : " + i);
         }
         i++;
-        postInvalidateDelayed(1000);
+        //postInvalidateDelayed(1000);
         //invalidate();
     }
 }

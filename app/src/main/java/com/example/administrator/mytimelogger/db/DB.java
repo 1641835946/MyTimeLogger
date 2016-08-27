@@ -5,19 +5,18 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
+import com.example.administrator.mytimelogger.CustomView;
 import com.example.administrator.mytimelogger.model.Activities;
-import com.example.administrator.mytimelogger.model.ActivitiesCustom;
-import com.example.administrator.mytimelogger.model.GridTag;
+import com.example.administrator.mytimelogger.model.CustomSet;
 import com.example.administrator.mytimelogger.model.Set;
+import com.example.administrator.mytimelogger.model.SetItemInOrder;
 import com.example.administrator.mytimelogger.model.Tag;
 import com.example.administrator.mytimelogger.model.Time;
 import com.example.administrator.mytimelogger.util.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Administrator on 2016/8/22.
@@ -46,24 +45,37 @@ public class DB {
     }
 
     //保存标签具体信息
-    public void saveTag(Tag tag) {
+    public int saveTag(Tag tag) {
+        int id = 0;
         if (tag != null) {
             ContentValues values = new ContentValues();
             values.put(Constant.TAG_NAME, tag.getName());
             values.put(Constant.TAG_COLOR, tag.getColor());
             values.put(Constant.TAG_ICON, tag.getIcon());
             db.insert(Constant.TABLE_TAG, null, values);
-//            if (tag.getName() == null) Log.e(TAG, "saveTag: tag.getName = null");
-//            else Log.e(TAG, "saveTag: tag.getName = null");
+            Cursor cursor = db.query(Constant.TABLE_TAG, null,
+                    Constant.TAG_NAME + " = ? and " + Constant.TAG_COLOR + " = ? and " + Constant.TAG_ICON + " = ?",
+                    new String[] {tag.getName(), String.valueOf(tag.getColor()), String.valueOf(tag.getIcon())},
+                    null, null, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getInt(cursor.getColumnIndex("id"));
+                } while (cursor.moveToNext());
+            }
+            if (cursor != null) {
+                cursor.close();
+            }
         }
+        return id;
     }
 
+    //？my_problem:需要check一下set的成员变量是否为null吗？
     //保存群组（含一个或多个活动）
-    public void saveSet(Set set) {
+    public int saveSet(Set set) {
+        int id = 0;
         if (set != null) {
             ContentValues values = new ContentValues();
             //autoincrement id是自增长的，需要读取但不需要保存。
-            values.put(Constant.SET_STATE, set.getState());
             values.put(Constant.SET_TAG_ID, set.getTagID());
             values.put(Constant.SET_COMMIT, set.getCommit());
             values.put(Constant.SET_DURATION, set.getDuration());
@@ -74,7 +86,30 @@ public class DB {
             values.put(Constant.SET_BEGIN_MINUTE, set.getBeginTime().getMinute());
             values.put(Constant.SET_BEGIN_SECOND, set.getBeginTime().getSecond());
             db.insert(Constant.TABLE_SET, null, values);
+            Cursor cursor = db.query(Constant.TABLE_SET, null,
+                    Constant.SET_BEGIN_YEAR + " = ? and " +
+                            Constant.SET_BEGIN_MOUTH + " = ? and " +
+                            Constant.SET_BEGIN_DAY + " = ? and " +
+                            Constant.SET_BEGIN_HOUR + " = ? and " +
+                            Constant.SET_BEGIN_MINUTE + " = ? and " +
+                            Constant.SET_BEGIN_SECOND + " = ?",
+                    new String[] {""+set.getBeginTime().getYear(),
+                            ""+set.getBeginTime().getMouth(),
+                            ""+set.getBeginTime().getDay(),
+                            ""+set.getBeginTime().getHour(),
+                            ""+set.getBeginTime().getMinute(),
+                            ""+set.getBeginTime().getSecond()},
+                    null, null, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    id = cursor.getInt(cursor.getColumnIndex("id"));
+                } while (cursor.moveToNext());
+            }
+            if (cursor != null) {
+                cursor.close();
+            }
         }
+        return id;
     }
 
     //保存活动（Activities区别于android中的Activity）
@@ -99,22 +134,22 @@ public class DB {
         }
     }
 
-    //添加标签
-    public void addTagOrder(int tagId) {
-        ContentValues values = new ContentValues();
-        values.put(Constant.ORDER_TAG_ID, tagId);
-        db.insert(Constant.TABLE_ORDER, null, values);
-    }
+//    //添加标签//直接更新标签顺序，id才不会错
+//    public void addTagOrder(int tagId) {
+//        ContentValues values = new ContentValues();
+//        values.put(Constant.ORDER_TAG_ID, tagId);
+//        db.insert(Constant.TABLE_ORDER, null, values);
+//    }
 
     //更新标签顺序
     public void updateTagOrder(List<Integer> tagIdList) {
         if (tagIdList != null && tagIdList.size() > 0) {
-            db.delete(Constant.TABLE_ORDER, null, null);
+            db.delete(Constant.TABLE_TAG_ORDER, null, null);
             ContentValues values = new ContentValues();
             for (int i = 0; i < tagIdList.size(); i++) {
                 values.put("id", i+1+"");
                 values.put(Constant.ORDER_TAG_ID, tagIdList.get(i));
-                db.insert(Constant.TABLE_ORDER, null, values);
+                db.insert(Constant.TABLE_TAG_ORDER, null, values);
                 values.clear();
             }
         }
@@ -123,7 +158,7 @@ public class DB {
     //加载标签列表（有顺序）
     public List<Integer> loadTagOrder() throws Resources.NotFoundException {
         boolean exist = false;
-        Cursor cursor = db.query(Constant.TABLE_ORDER, null, null, null, null, null, null);
+        Cursor cursor = db.query(Constant.TABLE_TAG_ORDER, null, null, null, null, null, null);
         List<Integer> list = new ArrayList<>();
         if (cursor.moveToFirst()) {
             exist = true;
@@ -140,79 +175,33 @@ public class DB {
         else {throw new Resources.NotFoundException();}
     }
 
-    //图标，名称，顺序
-    public List<GridTag> loadGridTag() throws Resources.NotFoundException {
-        List<Integer> tagList = loadTagOrder();
-        List<GridTag> list = new ArrayList<>();
-        GridTag gridTag = null;
-        for (int i = 0; i < tagList.size(); i++) {
-            gridTag = new GridTag();
-            Tag tag =  loadTag(tagList.get(i));
-            gridTag.setIcon(tag.getIcon());
-            gridTag.setName(tag.getName());
-            gridTag.setTagID(tag.getId());
-            list.add(gridTag);
+    //更新set顺序
+    public void updateSetOrder(List<SetItemInOrder> setList) {
+        if (setList != null && setList.size() > 0) {
+            db.delete(Constant.TABLE_SET_ORDER, null, null);
+            ContentValues values = new ContentValues();
+            for (int i = 0; i < setList.size(); i++) {
+                values.put("id", i+1+"");
+                values.put(Constant.ORDER_SET_ID, setList.get(i).getSetID());
+                values.put(Constant.ORDER_SET_STATE, setList.get(i).getState());
+                db.insert(Constant.TABLE_SET_ORDER, null, values);
+                values.clear();
+            }
         }
-        return list;
     }
 
-    //加载自定义控件中活动的信息
-    public List<ActivitiesCustom> loadNotEnded() throws Resources.NotFoundException {
-
-        List<ActivitiesCustom> list = new ArrayList<>();
-        List<Set> setList = new ArrayList<>();
-        setList = loadNotEndedSet();
-        list = set2ActivitiesCustom(setList);
-        for (int i = 0; i < list.size(); i++) {
-            Tag tag = loadTag(list.get(i).getSetID());
-            list.get(i).setName(tag.getName());
-            list.get(i).setIcon(tag.getIcon());
-        }
-        return list;
-    }
-
-    private List<ActivitiesCustom> set2ActivitiesCustom(List<Set> setList) {
-        List<ActivitiesCustom> list = new ArrayList<>();
-//        if (setList != null && setList.size() >0) {
-//        }
-        for (int i = 0; i < setList.size(); i++) {
-            list.set(i, set2ActivitiesCustom(setList.get(i)));
-        }
-        return list;
-    }
-
-    private ActivitiesCustom set2ActivitiesCustom(Set set) {
-        ActivitiesCustom activity = new ActivitiesCustom();
-        activity.setSetID(set.getSetID());
-        activity.setDuration(set.getDuration());
-        activity.setBeginTime(set.getBeginTime());
-        activity.setState(set.getState());
-        return activity;
-    }
-
-    //加载未完成的一列群组（群组是单数）的具体信息
-    public List<Set> loadNotEndedSet() throws Resources.NotFoundException {
+    //加载set列表（有顺序）
+    public List<SetItemInOrder> loadSetOrder() throws Resources.NotFoundException {
         boolean exist = false;
-        Cursor cursor = db.query(Constant.TABLE_SET, null, Constant.SET_STATE + "!=?",
-                new String[]{"" + Constant.STATE_STOP}, null, null, null);
-        List<Set> list = new ArrayList<>();
+        Cursor cursor = db.query(Constant.TABLE_SET_ORDER, null, null, null, null, null, null);
+        List<SetItemInOrder> list = new ArrayList<>();
         if (cursor.moveToFirst()) {
             exist = true;
             do {
-                Set activity = new Set();
-                activity.setState(cursor.getInt(cursor.getColumnIndex(Constant.SET_STATE)));
-                Time beginTime = new Time();
-                beginTime.setYear(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_YEAR)));
-                beginTime.setMouth(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_MOUTH)));
-                beginTime.setDay(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_DAY)));
-                beginTime.setHour(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_HOUR)));
-                beginTime.setMinute(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_MINUTE)));
-                beginTime.setSecond(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_SECOND)));
-                activity.setBeginTime(beginTime);
-                activity.setDuration(cursor.getLong(cursor.getColumnIndex(Constant.SET_DURATION)));
-                activity.setTagID(cursor.getInt(cursor.getColumnIndex(Constant.SET_TAG_ID)));
-                activity.setSetID(cursor.getInt(cursor.getColumnIndex("id")));
-                list.add(activity);
+                SetItemInOrder setItemInOrder = new SetItemInOrder();
+                setItemInOrder.setSetID(cursor.getInt(cursor.getColumnIndex(Constant.ORDER_SET_ID)));
+                setItemInOrder.setState(cursor.getInt(cursor.getColumnIndex(Constant.ORDER_SET_STATE)));
+                list.add(setItemInOrder);
             } while (cursor.moveToNext());
         }
         if (cursor != null) {
@@ -221,12 +210,43 @@ public class DB {
         if (exist) {return list;}
         else {throw new Resources.NotFoundException();}
     }
+
+    //有顺序的标签list
+    public List<Tag> loadTagList() throws Resources.NotFoundException {
+        List<Integer> tagList = loadTagOrder();
+        List<Tag> list = new ArrayList<>();
+        for (int i = 0; i < tagList.size(); i++) {
+            Tag tag =  loadTag(tagList.get(i));
+            list.add(tag);
+        }
+        return list;
+    }
+
+    //加载未完成的一列群组（群组是单数）的具体信息
+    public List<CustomSet> loadSetListNotEnded() throws Resources.NotFoundException {
+        boolean exist = false;
+        List<CustomSet> list = new ArrayList<>();
+        try {
+            List<SetItemInOrder> setItemInOrderList = loadSetOrder();
+            exist = true;
+            for (int i = 0; i<setItemInOrderList.size(); i++) {
+                CustomSet customSet = new CustomSet();
+                int id = setItemInOrderList.get(i).getSetID();
+                Set set = loadSet(id);
+                customSet.setSet(set);
+                customSet.setState(id);
+                list.add(customSet);
+            }
+        } catch (Resources.NotFoundException e) {}
+        if (exist) {return list;}
+        else {throw new Resources.NotFoundException();}
+    }
     //加载标签的具体信息
     public Tag loadTag(int tagId) throws Resources.NotFoundException {
         boolean exist = false;
         Cursor cursor = db.query(Constant.TABLE_TAG, null, "id = ?",
                 new String[] {String.valueOf(tagId)}, null, null, null);
-        Tag tag = new Tag();
+        Tag tag = null;
         if (cursor.moveToFirst()) {
             exist = true;
             do {
@@ -241,6 +261,36 @@ public class DB {
             cursor.close();
         }
         if (exist) {return tag;}
+        else {throw new Resources.NotFoundException();}
+    }
+
+    //load set item that not ended
+    public Set loadSet(int setId) throws Resources.NotFoundException {
+        boolean exist = false;
+        Cursor cursor = db.query(Constant.TABLE_SET, null, "id = ?",
+                new String[]{String.valueOf(setId)}, null, null, null);
+        Set set = null;
+        if (cursor.moveToFirst()) {
+            do {
+                set = new Set();
+                set.setSetID(setId);
+                set.setTagID(cursor.getInt(cursor.getColumnIndex(Constant.SET_TAG_ID)));
+                Time beginTime = new Time();
+                beginTime.setYear(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_YEAR)));
+                beginTime.setMouth(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_MOUTH)));
+                beginTime.setDay(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_DAY)));
+                beginTime.setHour(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_HOUR)));
+                beginTime.setMinute(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_MINUTE)));
+                beginTime.setSecond(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_SECOND)));
+                set.setBeginTime(beginTime);
+                set.setCommit(cursor.getString(cursor.getColumnIndex(Constant.SET_COMMIT)));
+                set.setDuration(cursor.getLong(cursor.getColumnIndex(Constant.SET_DURATION)));
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        if (exist) {return set;}
         else {throw new Resources.NotFoundException();}
     }
 }

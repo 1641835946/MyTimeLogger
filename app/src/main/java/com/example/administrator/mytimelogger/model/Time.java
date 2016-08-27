@@ -12,6 +12,17 @@ public class Time {
     private int minute;
     private int second;
 
+    public Time() {}
+
+    public Time(int year, int mouth, int day, int hour, int minute, int second) {
+        this.year = year;
+        this.mouth = mouth;
+        this.day = day;
+        this.hour = hour;
+        this.minute = minute;
+        this.second = second;
+    }
+
     public int getYear() {
         return year;
     }

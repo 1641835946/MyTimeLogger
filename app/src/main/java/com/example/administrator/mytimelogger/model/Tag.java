@@ -10,6 +10,20 @@ public class Tag {
     private long color;
     private long icon;
 
+    public Tag() {
+    }
+
+    public Tag(String name, long color, long icon) {
+        this.name = name;
+        this.color = color;
+        this.icon = icon;
+    }
+
+    public Tag(int id, String name, long color, long icon) {
+        this(name, color, icon);
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
