@@ -5,23 +5,19 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto">
 
     <ScrollView
+        android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
-            android:id="@+id/linear_layout"
+            android:id="@+id/outer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <!--<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/gridview"
+            <LinearLayout
+                android:id="@+id/linearlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:numColumns="4"
-                android:verticalSpacing="10dp"
-                android:horizontalSpacing="10dp"
-                android:stretchMode="columnWidth"
-                android:gravity="center"
-                />-->
+                android:orientation="vertical"></LinearLayout>
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"

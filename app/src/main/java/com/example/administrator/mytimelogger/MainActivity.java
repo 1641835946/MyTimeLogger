@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Log.e("MainActivity: thread id is ", ""+Thread.currentThread().getId());
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText(R.string.activities));
         tabLayout.addTab(tabLayout.newTab().setText(""));
@@ -45,22 +43,24 @@ public class MainActivity extends AppCompatActivity {
                 (getFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-//        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                viewPager.setCurrentItem(tab.getPosition());
-//            }
-//
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//
-//            }
-//
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//
-//            }
-//        });
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+                Log.e("MainActivity", "onTabSelected");
+                Log.e("MainActivity", "tag position " + tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                Log.e("MainActivity", "onTabUnselected");
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                Log.e("MainActivity", "onTabReselected");
+            }
+        });
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -71,28 +71,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-//        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        // 设置adapter
-//        recyclerView.setHasFixedSize(true);
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
-//        tagListAdapter = new TagListAdapter(mDatas);
-//        recyclerView.setAdapter(tagListAdapter);
-//    }
-//
-//    private List<Tag> init() {
-//        mDatas = new ArrayList<>();
-//        Tag tag1 = new Tag(1, "fight", Color.YELLOW, R.drawable.pause_btn);
-//        Tag tag2 = new Tag(2, "hello", Color.GRAY, R.drawable.resume_btn);
-//        Tag tag3 = new Tag(3, "world", Color.GREEN, R.drawable.stop_btn);
-//        Tag tag4 = new Tag(4, "liang", Color.BLUE, R.drawable.icon);
-//        Tag tag5 = new Tag(5, "jie", Color.RED, R.drawable.abc_ic_search_api_mtrl_alpha);
-//        mDatas.add(tag1);
-//        mDatas.add(tag2);
-//        mDatas.add(tag3);
-//        mDatas.add(tag4);
-//        mDatas.add(tag5);
-//        return mDatas;
     }
 
 }

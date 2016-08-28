@@ -1,6 +1,7 @@
 package com.example.administrator.mytimelogger;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -84,6 +85,7 @@ public class CustomView extends RelativeLayout {
         nameParams.addRule(RelativeLayout.RIGHT_OF, tagIconIv.getId());
         addView(tagNameTv, nameParams);
 
+        //不知道这个效果为何不对
         int width = SmallUtil.getScreenSize(context).widthPixels;
         durationParams = new LayoutParams(width-(5*margin + 3*iconSize), LayoutParams.WRAP_CONTENT);
         //durationParams.leftMargin = margin;
@@ -91,6 +93,7 @@ public class CustomView extends RelativeLayout {
         durationParams.bottomMargin = margin;
         durationParams.addRule(RelativeLayout.BELOW, tagNameTv.getId());
         durationParams.addRule(RelativeLayout.RIGHT_OF, tagIconIv.getId());
+        durationTv.setBackgroundColor(Color.RED);
         addView(durationTv, durationParams);
 
         stopParams = new LayoutParams(iconSize, iconSize);

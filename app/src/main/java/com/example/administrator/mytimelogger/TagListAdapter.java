@@ -18,13 +18,29 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/8/26.
  */
-public class TagListAdapter extends RecyclerView.Adapter<TagListAdapter.MyViewHolder> {
+public class TagListAdapter extends RecyclerView.Adapter<TagListAdapter.MyViewHolder> implements View.OnClickListener {
 
     private List<Tag> mDatas;
+    private OnRecyclerViewItemClickListener listener;
+    private boolean isGrid = false;
+
+    public TagListAdapter(List<Tag> mDatas, boolean isGrid) {
+        this.mDatas = mDatas;
+        this.isGrid = isGrid;
+    }
+
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        MyViewHolder holder = new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tag_list, parent, false));
+        View view;
+        MyViewHolder holder;
+        if (isGrid) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tag_grid, parent, false);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tag_list, parent, false);
+        }
+        view.setOnClickListener(this);
+        holder = new MyViewHolder(view);
         return holder;
     }
 
@@ -32,27 +48,12 @@ public class TagListAdapter extends RecyclerView.Adapter<TagListAdapter.MyViewHo
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.tv.setText(mDatas.get(position).getName());
         holder.iv.setImageResource((int)mDatas.get(position).getIcon());
+        holder.itemView.setTag(mDatas.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return init().size();
-    }
-
-    private List<Tag> init() {
-        mDatas = new ArrayList<>();
-        Tag tag1 = new Tag(1, "fight", Color.YELLOW, R.drawable.pause_btn);
-        Tag tag2 = new Tag(2, "hello", Color.GRAY, R.drawable.resume_btn);
-        Tag tag3 = new Tag(3, "world", Color.GREEN, R.drawable.stop_btn);
-        Tag tag4 = new Tag(4, "liang", Color.BLUE, R.drawable.icon);
-        Tag tag5 = new Tag(5, "jie", Color.RED, R.drawable.abc_ic_search_api_mtrl_alpha);
-        mDatas.add(tag1);
-        mDatas.add(tag2);
-        mDatas.add(tag3);
-        mDatas.add(tag4);
-        mDatas.add(tag5);
-        Log.e("Thread", "fragment init " + Thread.currentThread().getId());
-        return mDatas;
+        return mDatas.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -64,4 +65,21 @@ public class TagListAdapter extends RecyclerView.Adapter<TagListAdapter.MyViewHo
             tv = (TextView) view.findViewById(R.id.tv);
         }
     }
+
+    public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(listener != null) {
+            listener.onItemClick(view, (Tag)view.getTag());
+        }
+    }
+
+    public interface OnRecyclerViewItemClickListener {
+
+        void onItemClick(View view, Tag tag);
+    }
+
 }
