@@ -22,7 +22,7 @@ public class Set {
         this.beginTime = beginTime;
     }
 
-    public Set(int setID, int state, int tagID, String commit, long duration, Time beginTime) {
+    public Set(int setID, int tagID, String commit, long duration, Time beginTime) {
         this(tagID, commit, duration, beginTime);
         this.setID = setID;
     }

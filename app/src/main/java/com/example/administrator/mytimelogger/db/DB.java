@@ -6,9 +6,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.administrator.mytimelogger.CustomView;
 import com.example.administrator.mytimelogger.model.Activities;
-import com.example.administrator.mytimelogger.model.CustomSet;
+import com.example.administrator.mytimelogger.model.CustomSet4View;
 import com.example.administrator.mytimelogger.model.Set;
 import com.example.administrator.mytimelogger.model.SetItemInOrder;
 import com.example.administrator.mytimelogger.model.Tag;
@@ -223,19 +222,24 @@ public class DB {
     }
 
     //加载未完成的一列群组（群组是单数）的具体信息
-    public List<CustomSet> loadSetListNotEnded() throws Resources.NotFoundException {
+    public List<CustomSet4View> loadSetListNotEnded() throws Resources.NotFoundException {
         boolean exist = false;
-        List<CustomSet> list = new ArrayList<>();
+        List<CustomSet4View> list = new ArrayList<>();
         try {
             List<SetItemInOrder> setItemInOrderList = loadSetOrder();
             exist = true;
             for (int i = 0; i<setItemInOrderList.size(); i++) {
-                CustomSet customSet = new CustomSet();
-                int id = setItemInOrderList.get(i).getSetID();
-                Set set = loadSet(id);
-                customSet.setSet(set);
-                customSet.setState(id);
-                list.add(customSet);
+                CustomSet4View customSet4View = new CustomSet4View();
+                int setID = setItemInOrderList.get(i).getSetID();
+                Set set = loadSet(setID);
+                Tag tag = loadTag(set.getTagID());
+                String tagName = tag.getName();
+                int tagIcon = tag.getIcon();
+                customSet4View.setTagIcon(tagIcon);
+                customSet4View.setSet(set);
+                customSet4View.setState(setID);
+                customSet4View.setTagName(tagName);
+                list.add(customSet4View);
             }
         } catch (Resources.NotFoundException e) {}
         if (exist) {return list;}
@@ -254,7 +258,7 @@ public class DB {
                 tag.setId(tagId);
                 tag.setName(cursor.getString(cursor.getColumnIndex(Constant.TAG_NAME)));
                 tag.setColor(cursor.getLong(cursor.getColumnIndex(Constant.TAG_COLOR)));
-                tag.setIcon(cursor.getLong(cursor.getColumnIndex(Constant.TAG_ICON)));
+                tag.setIcon(cursor.getInt(cursor.getColumnIndex(Constant.TAG_ICON)));
             } while (cursor.moveToNext());
         }
         if (cursor != null) {
