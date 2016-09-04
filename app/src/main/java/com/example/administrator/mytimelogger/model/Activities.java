@@ -6,12 +6,12 @@ package com.example.administrator.mytimelogger.model;
 public class Activities {
 
     private int setId;//群组的ID，多个活动可以有一个共同的群组ID
-    private Time beginTime;
-    private Time endTime;
+    private MyTime beginTime;
+    private MyTime endTime;
     private long duration;
 
     public Activities() {}
-    public Activities(int setId, Time beginTime, Time endTime, long duration) {
+    public Activities(int setId, MyTime beginTime, MyTime endTime, long duration) {
         this.beginTime = beginTime;
         this.endTime = endTime;
         this.duration = duration;
@@ -26,7 +26,7 @@ public class Activities {
         return duration;
     }
 
-    public Time getEndTime() {
+    public MyTime getEndTime() {
         return endTime;
     }
 
@@ -34,11 +34,11 @@ public class Activities {
         this.setId = setId;
     }
 
-    public void setBeginTime(Time beginTime) {
+    public void setBeginTime(MyTime beginTime) {
         this.beginTime = beginTime;
     }
 
-    public void setEndTime(Time endTime) {
+    public void setEndTime(MyTime endTime) {
         this.endTime = endTime;
     }
 
@@ -46,7 +46,7 @@ public class Activities {
         this.duration = duration;
     }
 
-    public Time getBeginTime() {
+    public MyTime getBeginTime() {
         return beginTime;
     }
 }

@@ -5,13 +5,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.administrator.mytimelogger.model.Activities;
 import com.example.administrator.mytimelogger.model.CustomSet4View;
 import com.example.administrator.mytimelogger.model.Set;
 import com.example.administrator.mytimelogger.model.SetItemInOrder;
 import com.example.administrator.mytimelogger.model.Tag;
-import com.example.administrator.mytimelogger.model.Time;
+import com.example.administrator.mytimelogger.model.MyTime;
 import com.example.administrator.mytimelogger.util.Constant;
 
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class DB {
             values.put(Constant.SET_COMMIT, set.getCommit());
             values.put(Constant.SET_DURATION, set.getDuration());
             values.put(Constant.SET_BEGIN_YEAR, set.getBeginTime().getYear());
-            values.put(Constant.SET_BEGIN_MOUTH, set.getBeginTime().getMouth());
+            values.put(Constant.SET_BEGIN_MONTH, set.getBeginTime().getMonth());
             values.put(Constant.SET_BEGIN_DAY, set.getBeginTime().getDay());
             values.put(Constant.SET_BEGIN_HOUR, set.getBeginTime().getHour());
             values.put(Constant.SET_BEGIN_MINUTE, set.getBeginTime().getMinute());
@@ -87,13 +88,13 @@ public class DB {
             db.insert(Constant.TABLE_SET, null, values);
             Cursor cursor = db.query(Constant.TABLE_SET, null,
                     Constant.SET_BEGIN_YEAR + " = ? and " +
-                            Constant.SET_BEGIN_MOUTH + " = ? and " +
+                            Constant.SET_BEGIN_MONTH + " = ? and " +
                             Constant.SET_BEGIN_DAY + " = ? and " +
                             Constant.SET_BEGIN_HOUR + " = ? and " +
                             Constant.SET_BEGIN_MINUTE + " = ? and " +
                             Constant.SET_BEGIN_SECOND + " = ?",
                     new String[] {""+set.getBeginTime().getYear(),
-                            ""+set.getBeginTime().getMouth(),
+                            ""+set.getBeginTime().getMonth(),
                             ""+set.getBeginTime().getDay(),
                             ""+set.getBeginTime().getHour(),
                             ""+set.getBeginTime().getMinute(),
@@ -111,6 +112,21 @@ public class DB {
         return id;
     }
 
+    public void updateSet(Set set) {
+        if (set != null) {
+            ContentValues values = new ContentValues();
+            //autoincrement id是自增长的，需要读取但不需要保存。
+            values.put(Constant.SET_COMMIT, set.getCommit());
+            values.put(Constant.SET_DURATION, set.getDuration());
+            values.put(Constant.SET_BEGIN_YEAR, set.getBeginTime().getYear());
+            values.put(Constant.SET_BEGIN_MONTH, set.getBeginTime().getMonth());
+            values.put(Constant.SET_BEGIN_DAY, set.getBeginTime().getDay());
+            values.put(Constant.SET_BEGIN_HOUR, set.getBeginTime().getHour());
+            values.put(Constant.SET_BEGIN_MINUTE, set.getBeginTime().getMinute());
+            values.put(Constant.SET_BEGIN_SECOND, set.getBeginTime().getSecond());
+            db.update(Constant.TABLE_SET, values, "id = ?", new String[] {"" + set.getSetID()});
+        }
+    }
     //保存活动（Activities区别于android中的Activity）
     public void saveActivities(Activities activities) {
         if (activities != null) {
@@ -118,17 +134,17 @@ public class DB {
             values.put(Constant.ACTIVITY_SET_ID, activities.getSetId());
             values.put(Constant.ACTIVITY_DURATION, activities.getDuration());
             values.put(Constant.ACTIVITY_BEGIN_YEAR, activities.getBeginTime().getYear());
-            values.put(Constant.ACTIVITY_BEGIN_MOUTH, activities.getBeginTime().getMouth());
+            values.put(Constant.ACTIVITY_BEGIN_MONTH, activities.getBeginTime().getMonth());
             values.put(Constant.ACTIVITY_BEGIN_DAY, activities.getBeginTime().getDay());
             values.put(Constant.ACTIVITY_BEGIN_HOUR, activities.getBeginTime().getHour());
             values.put(Constant.ACTIVITY_BEGIN_MINUTE, activities.getBeginTime().getMinute());
             values.put(Constant.ACTIVITY_BEGIN_SECOND, activities.getBeginTime().getSecond());
-            values.put(Constant.ACTIVITY_BEGIN_YEAR, activities.getEndTime().getYear());
-            values.put(Constant.ACTIVITY_BEGIN_MOUTH, activities.getEndTime().getMouth());
-            values.put(Constant.ACTIVITY_BEGIN_DAY, activities.getEndTime().getDay());
-            values.put(Constant.ACTIVITY_BEGIN_HOUR, activities.getEndTime().getHour());
-            values.put(Constant.ACTIVITY_BEGIN_MINUTE, activities.getEndTime().getMinute());
-            values.put(Constant.ACTIVITY_BEGIN_SECOND, activities.getEndTime().getSecond());
+            values.put(Constant.ACTIVITY_END_YEAR, activities.getEndTime().getYear());
+            values.put(Constant.ACTIVITY_END_MONTH, activities.getEndTime().getMonth());
+            values.put(Constant.ACTIVITY_END_DAY, activities.getEndTime().getDay());
+            values.put(Constant.ACTIVITY_END_HOUR, activities.getEndTime().getHour());
+            values.put(Constant.ACTIVITY_END_MINUTE, activities.getEndTime().getMinute());
+            values.put(Constant.ACTIVITY_END_SECOND, activities.getEndTime().getSecond());
             db.insert(Constant.TABLE_ACTIVITY, null, values);
         }
     }
@@ -180,7 +196,9 @@ public class DB {
             db.delete(Constant.TABLE_SET_ORDER, null, null);
             ContentValues values = new ContentValues();
             for (int i = 0; i < setList.size(); i++) {
-                values.put("id", i+1+"");
+                values.put("id", i + 1 + "");
+                Log.e("set id is", " " + setList.get(i).getSetID());
+                Log.e("set state is " , "" + setList.get(i).getState());
                 values.put(Constant.ORDER_SET_ID, setList.get(i).getSetID());
                 values.put(Constant.ORDER_SET_STATE, setList.get(i).getState());
                 db.insert(Constant.TABLE_SET_ORDER, null, values);
@@ -221,6 +239,7 @@ public class DB {
         return list;
     }
 
+    static final String TAG1 = "loadSetListNotEnded";
     //加载未完成的一列群组（群组是单数）的具体信息
     public List<CustomSet4View> loadSetListNotEnded() throws Resources.NotFoundException {
         boolean exist = false;
@@ -233,15 +252,16 @@ public class DB {
                 int setID = setItemInOrderList.get(i).getSetID();
                 Set set = loadSet(setID);
                 Tag tag = loadTag(set.getTagID());
-                String tagName = tag.getName();
-                int tagIcon = tag.getIcon();
-                customSet4View.setTagIcon(tagIcon);
                 customSet4View.setSet(set);
-                customSet4View.setState(setID);
-                customSet4View.setTagName(tagName);
+                customSet4View.setState(setItemInOrderList.get(i).getState());
+                customSet4View.setTag(tag);
                 list.add(customSet4View);
+                Log.e(TAG1, "setid " + setID);
+                Log.e(TAG1, "begin time" + set.getBeginTime().toString());
+                Log.e(TAG1, "duration" + set.getDuration());
             }
-        } catch (Resources.NotFoundException e) {}
+        } catch (Resources.NotFoundException e) {
+        }
         if (exist) {return list;}
         else {throw new Resources.NotFoundException();}
     }
@@ -254,10 +274,11 @@ public class DB {
         if (cursor.moveToFirst()) {
             exist = true;
             do {
+                exist = true;
                 tag = new Tag();
                 tag.setId(tagId);
                 tag.setName(cursor.getString(cursor.getColumnIndex(Constant.TAG_NAME)));
-                tag.setColor(cursor.getLong(cursor.getColumnIndex(Constant.TAG_COLOR)));
+                tag.setColor(cursor.getInt(cursor.getColumnIndex(Constant.TAG_COLOR)));
                 tag.setIcon(cursor.getInt(cursor.getColumnIndex(Constant.TAG_ICON)));
             } while (cursor.moveToNext());
         }
@@ -276,19 +297,20 @@ public class DB {
         Set set = null;
         if (cursor.moveToFirst()) {
             do {
+                exist = true;
                 set = new Set();
                 set.setSetID(setId);
                 set.setTagID(cursor.getInt(cursor.getColumnIndex(Constant.SET_TAG_ID)));
-                Time beginTime = new Time();
+                MyTime beginTime = new MyTime();
                 beginTime.setYear(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_YEAR)));
-                beginTime.setMouth(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_MOUTH)));
+                beginTime.setMonth(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_MONTH)));
                 beginTime.setDay(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_DAY)));
                 beginTime.setHour(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_HOUR)));
                 beginTime.setMinute(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_MINUTE)));
                 beginTime.setSecond(cursor.getInt(cursor.getColumnIndex(Constant.SET_BEGIN_SECOND)));
                 set.setBeginTime(beginTime);
                 set.setCommit(cursor.getString(cursor.getColumnIndex(Constant.SET_COMMIT)));
-                set.setDuration(cursor.getLong(cursor.getColumnIndex(Constant.SET_DURATION)));
+                set.setDuration(cursor.getInt(cursor.getColumnIndex(Constant.SET_DURATION)));
             } while (cursor.moveToNext());
         }
         if (cursor != null) {

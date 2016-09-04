@@ -1,7 +1,5 @@
 package com.example.administrator.mytimelogger.model;
 
-import com.example.administrator.mytimelogger.model.Time;
-
 /**
  * Created by Administrator on 2016/8/22.
  */
@@ -10,19 +8,19 @@ public class Set {
     private int setID;//群组的ID，多个活动可以有一个共同的群组ID,这里是用于存储Activities
     private int tagID;
     private String commit;
-    private long duration;
-    private Time beginTime;
+    private int duration;
+    private MyTime beginTime;
 
     public Set() {}
 
-    public Set(int tagID, String commit, long duration, Time beginTime) {
+    public Set(int tagID, String commit, int duration, MyTime beginTime) {
         this.tagID = tagID;
         this.commit = commit;
         this.duration = duration;
         this.beginTime = beginTime;
     }
 
-    public Set(int setID, int tagID, String commit, long duration, Time beginTime) {
+    public Set(int setID, int tagID, String commit, int duration, MyTime beginTime) {
         this(tagID, commit, duration, beginTime);
         this.setID = setID;
     }
@@ -39,11 +37,11 @@ public class Set {
         this.commit = commit;
     }
 
-    public void setDuration(long duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
-    public void setBeginTime(Time beginTime) {
+    public void setBeginTime(MyTime beginTime) {
         this.beginTime = beginTime;
     }
 
@@ -59,11 +57,11 @@ public class Set {
         return commit;
     }
 
-    public long getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public Time getBeginTime() {
+    public MyTime getBeginTime() {
         return beginTime;
     }
 }

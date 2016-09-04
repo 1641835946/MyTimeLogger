@@ -6,7 +6,7 @@
     android:layout_marginBottom="@dimen/margin"
     >
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/iv"
         android:layout_width="@dimen/icon_size"
         android:layout_height="@dimen/icon_size"

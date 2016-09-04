@@ -3,4 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="lightPink">#ffb6c1</color>
+    <color name="deepPink">#ff1493</color>
+    <color name="orchid">#da70d6</color>
 </resources>

@@ -1,33 +1,25 @@
 package com.example.administrator.mytimelogger.model;
 
+import android.util.Log;
+
 /**
  * Created by Administrator on 2016/8/26.
  */
 public class CustomSet4View {
 
     private int state;
-    private String tagName;
-    private int tagIcon;
-    private Set set;
+    private Tag tag;
+    private Set set;//与Tag有重复，tag'id
 
     public CustomSet4View() {}
 
-    public CustomSet4View(int state, String tagName, int tagIcon, Set set) {
+    public CustomSet4View(int state, Tag tag, Set set) {
         this.state = state;
-        this.tagName = tagName;
-        this.tagIcon = tagIcon;
+        this.tag = tag;
         this.set = set;
     }
 
-    public void setTagIcon(int tagIcon) {
-        this.tagIcon = tagIcon;
-    }
-
-    public int getTagIcon() {
-        return tagIcon;
-    }
-
-    public String getTagName() {return tagName;}
+    public Tag getTag() {return tag;}
 
     public int getState() {
         return state;
@@ -37,8 +29,7 @@ public class CustomSet4View {
         return set;
     }
 
-    public void setTagName(String tagName) {this.tagName = tagName;}
-
+    public void setTag(Tag tag) {this.tag = tag;}
     public void setState(int state) {
         this.state = state;
     }

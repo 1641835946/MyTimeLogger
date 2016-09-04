@@ -1,23 +1,33 @@
 package com.example.administrator.mytimelogger.util;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+
+import com.example.administrator.mytimelogger.model.Tag;
+import com.example.administrator.mytimelogger.model.MyTime;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Administrator on 2016/8/25.
  */
 public class SmallUtil {
 
-    public static String generateDurationStr (long duration) {
-        String durationStr = generatePart((int)(duration / 3600)) + ":" +
-                generatePart((int)(duration / 3600 %60)) + ":" +
-                generatePart((int)(duration % 60));
-        return durationStr;
-    }
+//    public static String generateDurationStr (long duration) {
+//        String durationStr = generatePart((int)(duration / 3600)) + ":" +
+//                generatePart((int)(duration / 3600 %60)) + ":" +
+//                generatePart((int)(duration % 60));
+//        return durationStr;
+//    }
 
-    private static String generatePart(int time) {
+    public static String generatePart(int time) {
         String back;
         if (time < 10) {
             back = "0" + time;
@@ -35,4 +45,50 @@ public class SmallUtil {
         return metrics;
     }
 
+    public static void changeColor(AppCompatImageView iv, Tag tag) {
+        iv.setImageResource(tag.getIcon());
+        iv.setColorFilter(tag.getColor());
+    }
+
+    public static MyTime gainTime() {
+        Calendar ca = Calendar.getInstance();
+        MyTime myTime = new MyTime(ca.get(ca.YEAR),
+                ca.get(ca.MONTH)+1,
+                ca.get(ca.DATE),
+                ca.get(ca.HOUR_OF_DAY),
+                ca.get(ca.MINUTE),
+                ca.get(ca.SECOND));
+        return myTime;
+    }
+
+    public static int gainIntDuration (MyTime begin, MyTime end) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.util.Date now;
+        java.util.Date date;
+        try {
+            now = df.parse(end.toString());
+            date= df.parse(begin.toString());
+            int l= (int)((now.getTime()-date.getTime())/1000);
+            Log.e("gainLongDuration", "" + l);
+            return l;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static String gainStringDuration(MyTime begin, MyTime end) {
+        int duration = gainIntDuration(begin, end);
+        String back = gainStringDuration(duration);
+        return back;
+    }
+    public static String gainStringDuration(int duration) {
+        String back;
+        if (duration < 3600) {
+            back = generatePart(duration / 60) + ":" + generatePart(duration % 60);
+        } else {
+            back = generatePart(duration / 3600) + ":" + generatePart(duration % 3600);
+        }
+        return back;
+    }
 }

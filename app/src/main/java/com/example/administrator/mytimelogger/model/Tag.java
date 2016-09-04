@@ -7,19 +7,19 @@ public class Tag {
 
     private int id;
     private String name;
-    private long color;
+    private int color;//R.color
     private int icon;
 
     public Tag() {
     }
 
-    public Tag(String name, long color, int icon) {
+    public Tag(String name, int color, int icon) {
         this.name = name;
         this.color = color;
         this.icon = icon;
     }
 
-    public Tag(int id, String name, long color, int icon) {
+    public Tag(int id, String name, int color, int icon) {
         this(name, color, icon);
         this.id = id;
     }
@@ -32,7 +32,7 @@ public class Tag {
         return name;
     }
 
-    public long getColor() {
+    public int getColor() {
         return color;
     }
 
@@ -52,7 +52,7 @@ public class Tag {
         this.icon = icon;
     }
 
-    public void setColor(long color) {
+    public void setColor(int color) {
         this.color = color;
     }
 }
