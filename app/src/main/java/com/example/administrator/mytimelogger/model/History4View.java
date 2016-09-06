@@ -8,9 +8,9 @@ public class History4View {
     private Activities activities;
     private Tag tag;
     private int viewType;
-    private int yearMouthDay;
+    private String yearMouthDay;
 
-    public History4View() {}
+//    public History4View() {}
 
     public History4View(Activities activities, Tag tag, int viewType) {
         this.activities = activities;
@@ -18,22 +18,16 @@ public class History4View {
         this.viewType = viewType;
     }
 
-    public History4View(int viewType, int yearMouthDay) {
+    public History4View(int viewType, String yearMouthDay) {
         this.viewType = viewType;
         this.yearMouthDay = yearMouthDay;
-    }
-
-    public History4View(int viewType, String test) {
-        this.viewType = viewType;
-        this.tag = new Tag();
-        tag.setName(test);
     }
 
     public int getViewType() {
         return viewType;
     }
 
-    public int getYearMouthDay() {
+    public String getYearMouthDay() {
         return yearMouthDay;
     }
 
@@ -57,7 +51,7 @@ public class History4View {
         this.viewType = viewType;
     }
 
-    public void setYearMouthDay(int yearMouthDay) {
+    public void setYearMouthDay(String yearMouthDay) {
         this.yearMouthDay = yearMouthDay;
     }
 }

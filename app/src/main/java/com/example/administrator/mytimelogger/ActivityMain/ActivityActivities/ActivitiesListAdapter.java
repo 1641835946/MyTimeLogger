@@ -1,9 +1,12 @@
 package com.example.administrator.mytimelogger.ActivityMain.ActivityActivities;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +14,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.administrator.mytimelogger.R;
-import com.example.administrator.mytimelogger.model.CustomSet4List;
-import com.example.administrator.mytimelogger.model.CustomSet4View;
+import com.example.administrator.mytimelogger.db.DB;
+import com.example.administrator.mytimelogger.model.ActivityItem4List;
+import com.example.administrator.mytimelogger.model.ActivityItem4View;
 import com.example.administrator.mytimelogger.model.MyTime;
 import com.example.administrator.mytimelogger.util.Constant;
 import com.example.administrator.mytimelogger.util.SmallUtil;
@@ -26,19 +30,25 @@ import java.util.List;
 public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAdapter.ViewHolder>{
 
     private static final int UPDATE_TEXT = 1;
-    private List<CustomSet4View> datas;
-    private List<CustomSet4List> mList = new ArrayList<>();
+    private List<ActivityItem4View> setList;
+    private List<ActivityItem4List> mList = new ArrayList<>();
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_TEXT:
-                    MyTime begin = datas.get(msg.arg1).getSet().getBeginTime();
-                    MyTime end = SmallUtil.gainTime();
-                    int durationInt = datas.get(msg.arg1).getSet().getDuration();
-                    durationInt = durationInt + SmallUtil.gainIntDuration(begin, end);
-                    String duration = SmallUtil.gainStringDuration(durationInt);
-                    mList.get(msg.arg1).getDuration().setText(duration);
+                    for (int i = 0; i < mList.size(); i++) {
+                        if (setList.get(i).getState() == Constant.STATE_PLAY) {
+                            //计算未结束的activities与之前所有同一群组的activities的总时长
+                            MyTime begin = setList.get(i).getSet().getBeginTime();
+                            MyTime end = SmallUtil.gainTime();
+                            int lastTime = setList.get(i).getSet().getDuration();
+                            int allTime = lastTime + SmallUtil.gainIntDuration(begin, end);
+                            String duration = SmallUtil.gainStringDuration(allTime);
+                            mList.get(i).getDuration().setText(duration);
+                        }
+                    }
                     break;
                 default:
                     break;
@@ -50,16 +60,10 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
         @Override
         public void run() {
             while(keepDoing) {
-                synchronized (this) {
-                    for (int i = 0; i < mList.size(); i++) {
-                        if (datas.get(i).getState() == Constant.STATE_PLAY) {
-                            Message msg = new Message();
-                            msg.what = UPDATE_TEXT;
-                            msg.arg1 = i;
-                            handler.sendMessage(msg);
-                        }
-                    }
-                }
+//keepDoing
+                Message msg = new Message();
+                msg.what = UPDATE_TEXT;
+                handler.sendMessage(msg);
                 try {
                     mThread.sleep(500);
                 } catch (InterruptedException e) {
@@ -69,7 +73,16 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
         }
     });
 
-    public ActivitiesListAdapter(List<CustomSet4View> datas) {this.datas = datas;}
+
+    //获取数据的数量
+    @Override
+    public int getItemCount() {
+        return setList.size();
+    }
+
+    public ActivitiesListAdapter(List<ActivityItem4View> setList) {
+        this.setList = setList;
+    }
 
     private final static String TAG = "ActivitiesListAdapter";
     @Override
@@ -83,64 +96,80 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
         // viewHolder.tagIcon.setImageResource(.....);
         // 会导致imagebutton前景与背景不一样大小形状
         // 因为android:src的图是不会拉伸的
-//        viewHolder.tagIcon.setBackgroundResource(datas.get(position).getTag().getIcon());
-        SmallUtil.changeColor(viewHolder.tagIcon, datas.get(position).getTag());
-        viewHolder.tagNameTv.setText(datas.get(position).getTag().getName());
-        int duration = datas.get(position).getSet().getDuration();
+//        viewHolder.tagIcon.setBackgroundResource(setList.get(position).getTag().getIcon());
+        SmallUtil.changeColor(viewHolder.tagIcon, setList.get(position).getTag());
+        viewHolder.tagNameTv.setText(setList.get(position).getTag().getName());
+        int duration = setList.get(position).getSet().getDuration();
         if (duration == 0) {
             viewHolder.durationTv.setText("00:00");
         } else {
             viewHolder.durationTv.setText(SmallUtil.gainStringDuration(duration));
         }
-        int state = datas.get(position).getState();
+        int state = setList.get(position).getState();
         if (state == Constant.STATE_PLAY){
             viewHolder.pauseImgBtn.setBackgroundResource(R.drawable.pause_btn);
         } else {
             viewHolder.pauseImgBtn.setBackgroundResource(R.drawable.resume_btn);
         }
 
-        //监听器会不会？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
-        CustomSet4List customSet4ListItem = new CustomSet4List(viewHolder.durationTv,
+        ActivityItem4List customSet4ListItem = new ActivityItem4List(viewHolder.durationTv,
                 viewHolder.pauseImgBtn);
         mList.add(customSet4ListItem);
-//            mList.set(position, customSet4ListItem);
         startThread();
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pos = viewHolder.getLayoutPosition();
-                mOnItemClickListener.onItemClick(v, datas.get(pos));
+                mOnItemClickListener.onItemClick(v, setList.get(pos));
             }
         });
         viewHolder.pauseImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pos = viewHolder.getLayoutPosition();
-                mOnItemClickListener.onStateChangeClick(v, datas.get(pos));
+                mOnItemClickListener.onStateChangeClick(v, setList.get(pos));
             }
         });
         viewHolder.stopImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int pos = viewHolder.getLayoutPosition();
-                mOnItemClickListener.onEndClick(v, datas.get(pos));
+                mOnItemClickListener.onEndClick(v, setList.get(pos));
             }
         });
     }
 
-    private void startThread() {
-        if (mThread.isAlive()) {}
+
+    public void isAlive() {
+        if (mThread.isAlive()) {
+            Log.e("isAlive", "yes");
+        }
+        Log.e("isAlive", "log");
+    }
+    public void startThread() {
+        Log.e("startThread", "1");
+        if (mThread.isAlive()) {
+            Log.e("startThread", "2");
+        }
         else {
-            mThread.start();
+//            mThread.start();
+            try {
+                mThread.start();
+            } catch (IllegalThreadStateException e) {
+            }
         }
     }
-    private boolean keepDoing = true;
+    private boolean keepDoing;
+    public void setKeepDoing (boolean keepDoing) {
+        this.keepDoing = keepDoing;
+    }
     public void stopThread() {
         if (mThread.isAlive()) {
             keepDoing = false;
         }
     }
+    //未使用，且应用wait(),notify...
     public void suspendThread() {
         if (mThread.isAlive()) {
             mThread.suspend();
@@ -153,17 +182,10 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
     }
 
     public void notifyChanged() {
-        synchronized (this) {
-            mList = new ArrayList<>();
-            notifyDataSetChanged();
-        }
+        mList = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
-    //获取数据的数量
-    @Override
-    public int getItemCount() {
-        return datas.size();
-    }
     //自定义的ViewHolder，持有每个Item的的所有界面元素
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public AppCompatImageView tagIcon;
@@ -182,9 +204,9 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
     }
 
     public interface OnRecyclerViewItemClickListener {
-        void onItemClick(View view , CustomSet4View data);
-        void onStateChangeClick(View view, CustomSet4View data);
-        void onEndClick(View view, CustomSet4View data);
+        void onItemClick(View view , ActivityItem4View data);
+        void onStateChangeClick(View view, ActivityItem4View data);
+        void onEndClick(View view, ActivityItem4View data);
     }
 
     private OnRecyclerViewItemClickListener mOnItemClickListener = null;

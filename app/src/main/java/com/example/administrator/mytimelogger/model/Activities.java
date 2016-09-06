@@ -1,9 +1,11 @@
 package com.example.administrator.mytimelogger.model;
 
+import java.util.Comparator;
+
 /**
  * Created by Administrator on 2016/8/22.
  */
-public class Activities {
+public class Activities implements Comparable<Activities> {
 
     private int setId;//群组的ID，多个活动可以有一个共同的群组ID
     private MyTime beginTime;
@@ -48,5 +50,17 @@ public class Activities {
 
     public MyTime getBeginTime() {
         return beginTime;
+    }
+
+    @Override
+    public int compareTo(Activities o) {
+        switch (this.beginTime.compareTo(o.beginTime)) {
+            case -1:
+                return -1;
+            case 0:
+                return 0;
+            default:
+                return 1;
+        }
     }
 }

@@ -20,7 +20,7 @@ import com.example.administrator.mytimelogger.R;
 import com.example.administrator.mytimelogger.ActivityMain.TagListAdapter;
 import com.example.administrator.mytimelogger.db.DB;
 import com.example.administrator.mytimelogger.model.Activities;
-import com.example.administrator.mytimelogger.model.CustomSet4View;
+import com.example.administrator.mytimelogger.model.ActivityItem4View;
 import com.example.administrator.mytimelogger.model.Set;
 import com.example.administrator.mytimelogger.model.SetItemInOrder;
 import com.example.administrator.mytimelogger.model.Tag;
@@ -45,7 +45,7 @@ public class AddActivitiesFragment extends Fragment {
 //    java.lang.NullPointerException
 //    private DB mDB=DB.getInstance(getActivity());
     private List<Tag> tagList;
-    private List<CustomSet4View> setList;
+    private List<ActivityItem4View> setList;
     private ImageButton pauseBtn;
     private ImageButton stopBtn;
     private TextView durationTv;
@@ -72,14 +72,23 @@ public class AddActivitiesFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        activitiesAdapter.setKeepDoing(true);
+        activitiesAdapter.startThread();
+    }
+
+    @Override
     public void onPause() {
 //        super.onPause();
+        //退出前应先更新SetTable，SetOrder
         mDB.updateSetOrder(view2Order(setList));
         for (int i = 0; i < setList.size(); i++) {
             mDB.updateSet(setList.get(i).getSet());
             Log.e("onpause", i + " " + setList.get(i).getSet().getDuration());
         }
         activitiesAdapter.stopThread();
+        activitiesAdapter.isAlive();
         super.onPause();
     }
 
@@ -90,16 +99,14 @@ public class AddActivitiesFragment extends Fragment {
         Set set = new Set(tag.getId(), "", 0, time);
         int setId = mDB.saveSet(set);
         set.setSetID(setId);
-        CustomSet4View customSet4View = new CustomSet4View(Constant.STATE_PLAY,
+        ActivityItem4View customSet4View = new ActivityItem4View(Constant.STATE_PLAY,
                 tag,
                 set);
         setList.add(0, customSet4View);
-        //???????????如果datalist不是从构造函数中传进去而是在adapter中从数据库中读出来的呢？
         activitiesAdapter.notifyChanged();
-
     }
 
-    private List<SetItemInOrder> view2Order(List<CustomSet4View> customSet4ViewList) {
+    private List<SetItemInOrder> view2Order(List<ActivityItem4View> customSet4ViewList) {
         List<SetItemInOrder> list = new ArrayList<>();
         for(int i = 0; i < customSet4ViewList.size(); i++) {
             SetItemInOrder setItemInOrder = new SetItemInOrder(
@@ -110,7 +117,7 @@ public class AddActivitiesFragment extends Fragment {
         return list;
     }
 
-    private void addActivity(CustomSet4View data) {
+    private void addActivity(ActivityItem4View data) {
         int setId = data.getSet().getSetID();
         MyTime beginTime = data.getSet().getBeginTime();
         MyTime endTime = SmallUtil.gainTime();
@@ -119,7 +126,7 @@ public class AddActivitiesFragment extends Fragment {
                 endTime,
                 SmallUtil.gainIntDuration(beginTime, endTime));
         data.getSet().setDuration(data.getSet().getDuration() + SmallUtil.gainIntDuration(data.getSet().getBeginTime(), endTime));
-//        synchronized (this) {//可以直接在data上改吗？？？？？？？？？
+//        synchronized (this) {//可以直接在data上改吗？可以，因为这的数据与adapter是同一引用
 //            for (int i = 0; i<setList.size(); i++) {
 //                if (setList.get(i).getSet().getSetID() == setId) {
 //                    Set set = setList.get(i).getSet();
@@ -131,11 +138,10 @@ public class AddActivitiesFragment extends Fragment {
         mDB.saveActivities(activities);
     }
 
-    private void removeSetList (CustomSet4View data) {
-        for (int i = 0; i<setList.size(); i++) {
+    private void removeSetList (ActivityItem4View data) {
+        for (int i = 0; i<activitiesAdapter.getItemCount(); i++) {
             if (setList.get(i).getSet().getSetID() == data.getSet().getSetID()) {
                 setList.remove(i);
-                activitiesAdapter.notifyChanged();
             }
         }
     }
@@ -167,6 +173,7 @@ public class AddActivitiesFragment extends Fragment {
         listRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         listRecycler.setHasFixedSize(true);
         listRecycler.setItemAnimator(new DefaultItemAnimator());
+        DB mDB = DB.getInstance(getActivity());
         try {
             setList = mDB.loadSetListNotEnded();
         } catch (Resources.NotFoundException e) {
@@ -176,34 +183,30 @@ public class AddActivitiesFragment extends Fragment {
         activitiesAdapter = new ActivitiesListAdapter(setList);
         activitiesAdapter.setOnItemClickListener(new ActivitiesListAdapter.OnRecyclerViewItemClickListener() {
             @Override
-            public void onItemClick(View view, CustomSet4View data) {
+            public void onItemClick(View view, ActivityItem4View data) {
                 Toast.makeText(getActivity(), "item is click", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onStateChangeClick(View view, CustomSet4View data) {
+            public void onStateChangeClick(View view, ActivityItem4View data) {
                 ImageButton pauseBtn = (ImageButton) view;
                 if (data.getState() == Constant.STATE_PLAY) {
                     data.setState(Constant.STATE_PAUSE);
                     pauseBtn.setBackgroundResource(R.drawable.resume_btn);
                     addActivity(data);
-                    //当datalist是从构造函数传进去的，如果只是修改呢，需要notify。。。吗？
-                    //不需要！！！！！
                 } else {
                     data.setState(Constant.STATE_PLAY);
                     data.getSet().setBeginTime(SmallUtil.gainTime());
                     pauseBtn.setBackgroundResource(R.drawable.pause_btn);
-                    synchronized (this) {
-                        setList.remove(data);
-                        setList.add(0, data);
-                        activitiesAdapter.notifyChanged();
-                    }
+                    setList.remove(data);
+                    setList.add(0, data);
+                    activitiesAdapter.notifyChanged();
                 }
 
             }
 
             @Override
-            public void onEndClick(View view, CustomSet4View data) {
+            public void onEndClick(View view, ActivityItem4View data) {
                 if (data.getState() == Constant.STATE_PAUSE) {}
                 else {
                     //state is playing, then table activity +1

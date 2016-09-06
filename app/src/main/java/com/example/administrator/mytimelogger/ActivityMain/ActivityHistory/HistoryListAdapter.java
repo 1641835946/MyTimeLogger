@@ -1,6 +1,7 @@
 package com.example.administrator.mytimelogger.ActivityMain.ActivityHistory;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +16,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.administrator.mytimelogger.R;
+import com.example.administrator.mytimelogger.db.DB;
 import com.example.administrator.mytimelogger.model.History4View;
+import com.example.administrator.mytimelogger.model.MyTime;
+import com.example.administrator.mytimelogger.util.SmallUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +34,28 @@ public class HistoryListAdapter extends BaseAdapter implements PinnedSectionList
     private final int VIEWTYPE = 1;
     private List<History4View> mDatas;
     private Context context;
+    private DB mDB;
 
-    public HistoryListAdapter(Context context, List<History4View> mDatas) {
+    public HistoryListAdapter(Context context) {
         this.context = context;
-        this.mDatas = mDatas;
+        mDB = DB.getInstance(context);
+        try {
+            mDatas = mDB.loadDayHistory(SmallUtil.gainTime());
+            MyTime begin = mDatas.get(0).getActivities().getBeginTime();
+            String beginStr = SmallUtil.yearMouthDay(begin);
+            History4View firstTitle = new History4View(VIEWTYPE, beginStr);
+            mDatas.add(0,firstTitle);
+            for (int i = 1; i < mDatas.size(); i++) {
+                String then = SmallUtil.yearMouthDay(mDatas.get(i).getActivities().getBeginTime());
+                if (!then.equals(beginStr)) {
+                    History4View thenTitle = new History4View(VIEWTYPE, then);
+                    mDatas.add(i, thenTitle);
+                    i++;
+                }
+            }
+        } catch(Resources.NotFoundException e){
+            mDatas = new ArrayList<>();
+        }
     }
 
     @Override
@@ -46,14 +68,12 @@ public class HistoryListAdapter extends BaseAdapter implements PinnedSectionList
                 if (convertView == null) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.item_history_title, null);
                     titleViewHolder = new TitleViewHolder();
-                    titleViewHolder.month = (TextView) convertView.findViewById(R.id.month);
                     titleViewHolder.day = (TextView) convertView.findViewById(R.id.day);
-                    titleViewHolder.week = (TextView) convertView.findViewById(R.id.week);
                     convertView.setTag(titleViewHolder);
                 } else {
                     titleViewHolder = (TitleViewHolder) convertView.getTag();
                 }
-                titleViewHolder.month.setText("mouth");
+                titleViewHolder.day.setText(item.getYearMouthDay());
                 break;
             case 0:
                 if (convertView == null) {
@@ -64,13 +84,18 @@ public class HistoryListAdapter extends BaseAdapter implements PinnedSectionList
                     itemViewHolder.begin = (TextView) convertView.findViewById(R.id.begin);
                     itemViewHolder.end = (TextView) convertView.findViewById(R.id.end);
                     itemViewHolder.duration = (TextView) convertView.findViewById(R.id.duration);
+//                    itemViewHolder.commit = (TextView) convertView.findViewById(R.id.commit);
                     convertView.setTag(itemViewHolder);
                 } else {
                     itemViewHolder = (ItemViewHolder) convertView.getTag();
                 }
+                SmallUtil.changeColor(itemViewHolder.tagIcon, item.getTag());
+                itemViewHolder.begin.setText(SmallUtil.timepoint(item.getActivities().getBeginTime()) + "-");
+                itemViewHolder.end.setText(SmallUtil.timepoint(item.getActivities().getEndTime()));
+//                itemViewHolder.commit.setText();
                 itemViewHolder.tagName.setText(item.getTag().getName());
-                //smallUtil.changeColor 不用set drawable
-//        viewHolder.begin.setText(""+item.getActivities().getBeginTime());
+                int durationInt = (int)(item.getActivities().getDuration()/1000);
+                itemViewHolder.duration.setText(SmallUtil.gainStringDuration(durationInt));
                 break;
         }
 
@@ -98,9 +123,6 @@ public class HistoryListAdapter extends BaseAdapter implements PinnedSectionList
 
     @Override
     public int getCount() {
-        if(mDatas == null) {
-            mDatas = new ArrayList<>();
-        }
         return mDatas.size();
     }
 
@@ -110,12 +132,11 @@ public class HistoryListAdapter extends BaseAdapter implements PinnedSectionList
         public TextView duration;
         public TextView begin;
         public TextView end;
+//        public TextView commit;
     }
 
     class TitleViewHolder {
-        public TextView month;
         public TextView day;
-        public TextView week;
     }
 
     @Override

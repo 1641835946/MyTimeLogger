@@ -91,12 +91,12 @@ public class DBOpenHelper extends SQLiteOpenHelper {
                 Constant.TAG_ICON + "," +
                 Constant.TAG_COLOR +
                 ") values(?,?,?)";
-        db.execSQL(insertTag, new String[]{"学习", ""+R.drawable.st_022, "" + R.color.colorPrimary});
+        db.execSQL(insertTag, new String[]{"学习", ""+R.drawable.st_022, "" + R.color.colorAccent});
         db.execSQL(insertTag, new String[]{"阅读", "" + R.drawable.cat_96, "" + R.color.colorPrimary});
-        db.execSQL(insertTag, new String[]{"家务", "" + R.drawable.hpcd_079, "" + R.color.colorPrimary});
-        db.execSQL(insertTag, new String[]{"运动", "" + R.drawable.sp_071, "" + R.color.colorPrimary});
-        db.execSQL(insertTag, new String[]{"用餐", "" + R.drawable.fam_010, "" + R.color.colorPrimary});
-        db.execSQL(insertTag, new String[]{"娱乐", "" + R.drawable.fam_021, "" + R.color.colorPrimary});
+        db.execSQL(insertTag, new String[]{"家务", "" + R.drawable.hpcd_079, "" + R.color.colorPrimaryDark});
+        db.execSQL(insertTag, new String[]{"运动", "" + R.drawable.sp_071, "" + R.color.deepPink});
+        db.execSQL(insertTag, new String[]{"用餐", "" + R.drawable.fam_010, "" + R.color.lightPink});
+        db.execSQL(insertTag, new String[]{"娱乐", "" + R.drawable.fam_021, "" + R.color.orchid});
         db.execSQL(insertTag, new String[]{"购物", "" + R.drawable.fs_002, "" + R.color.colorPrimary});
         db.execSQL(insertTag, new String[]{"步行", "" + R.drawable.fam_043, "" + R.color.colorPrimary});
         db.execSQL(insertTag, new String[]{"上网", "" + R.drawable.cat_107, "" + R.color.colorPrimary});

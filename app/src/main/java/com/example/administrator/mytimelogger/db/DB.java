@@ -8,14 +8,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.administrator.mytimelogger.model.Activities;
-import com.example.administrator.mytimelogger.model.CustomSet4View;
+import com.example.administrator.mytimelogger.model.ActivityItem4View;
+import com.example.administrator.mytimelogger.model.History4View;
 import com.example.administrator.mytimelogger.model.Set;
 import com.example.administrator.mytimelogger.model.SetItemInOrder;
 import com.example.administrator.mytimelogger.model.Tag;
 import com.example.administrator.mytimelogger.model.MyTime;
 import com.example.administrator.mytimelogger.util.Constant;
+import com.example.administrator.mytimelogger.util.QuickSort;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -158,8 +161,11 @@ public class DB {
 
     //更新标签顺序
     public void updateTagOrder(List<Integer> tagIdList) {
-        if (tagIdList != null && tagIdList.size() > 0) {
+        if (tagIdList != null) {
             db.delete(Constant.TABLE_TAG_ORDER, null, null);
+            if (tagIdList.size() == 0) {
+                return;
+            }
             ContentValues values = new ContentValues();
             for (int i = 0; i < tagIdList.size(); i++) {
                 values.put("id", i+1+"");
@@ -192,8 +198,11 @@ public class DB {
 
     //更新set顺序
     public void updateSetOrder(List<SetItemInOrder> setList) {
-        if (setList != null && setList.size() > 0) {
+        if (setList != null) {
             db.delete(Constant.TABLE_SET_ORDER, null, null);
+            if (setList.size() == 0) {
+                return;
+            }
             ContentValues values = new ContentValues();
             for (int i = 0; i < setList.size(); i++) {
                 values.put("id", i + 1 + "");
@@ -241,14 +250,14 @@ public class DB {
 
     static final String TAG1 = "loadSetListNotEnded";
     //加载未完成的一列群组（群组是单数）的具体信息
-    public List<CustomSet4View> loadSetListNotEnded() throws Resources.NotFoundException {
+    public List<ActivityItem4View> loadSetListNotEnded() throws Resources.NotFoundException {
         boolean exist = false;
-        List<CustomSet4View> list = new ArrayList<>();
+        List<ActivityItem4View> list = new ArrayList<>();
         try {
             List<SetItemInOrder> setItemInOrderList = loadSetOrder();
             exist = true;
             for (int i = 0; i<setItemInOrderList.size(); i++) {
-                CustomSet4View customSet4View = new CustomSet4View();
+                ActivityItem4View customSet4View = new ActivityItem4View();
                 int setID = setItemInOrderList.get(i).getSetID();
                 Set set = loadSet(setID);
                 Tag tag = loadTag(set.getTagID());
@@ -274,7 +283,6 @@ public class DB {
         if (cursor.moveToFirst()) {
             exist = true;
             do {
-                exist = true;
                 tag = new Tag();
                 tag.setId(tagId);
                 tag.setName(cursor.getString(cursor.getColumnIndex(Constant.TAG_NAME)));
@@ -319,4 +327,112 @@ public class DB {
         if (exist) {return set;}
         else {throw new Resources.NotFoundException();}
     }
+
+    /************************load activities list******************************/
+    private Cursor loadTodayCursor(MyTime today) throws Resources.NotFoundException{
+        Cursor cursor = db.query(Constant.TABLE_ACTIVITY, null,
+                Constant.ACTIVITY_BEGIN_YEAR + " = ? and " +
+                        Constant.ACTIVITY_BEGIN_MONTH + " = ? and " +
+                        Constant.ACTIVITY_BEGIN_DAY + " = ?",
+                new String[]{String.valueOf(today.getYear()),
+                        String.valueOf(today.getMonth()),
+                        String.valueOf(today.getDay())}, null, null, null);
+        return cursor;
+    }
+    private Cursor loadYesterdayCursor(MyTime yesterday) throws Resources.NotFoundException{
+        Cursor cursor = db.query(Constant.TABLE_ACTIVITY, null,
+                Constant.ACTIVITY_END_YEAR + " = ? and " +
+                        Constant.ACTIVITY_END_MONTH + " = ? and " +
+                        Constant.ACTIVITY_END_DAY + " = ?",
+                new String[]{String.valueOf(yesterday.getYear()),
+                        String.valueOf(yesterday.getMonth()),
+                        String.valueOf(yesterday.getDay())}, null, null, null);
+        return cursor;
+    }
+
+    private void loadDayActivities(int whatDay,MyTime day, List<Activities> list, List<Integer> setIdList) throws Resources.NotFoundException{
+        Cursor cursor;
+        switch (whatDay) {
+            case -1:
+                cursor = loadYesterdayCursor(day);
+                break;
+            default:
+                cursor = loadTodayCursor(day);
+                break;
+        }
+        Activities activities;
+        if (cursor.moveToFirst()) {
+            do {
+                activities = new Activities();
+                int activitiesId = cursor.getInt(cursor.getColumnIndex("id"));
+                if (setIdList.contains(activitiesId)) {
+                    continue;
+                }
+                setIdList.add(activitiesId);
+                activities.setSetId(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_SET_ID)));
+                activities.setDuration(cursor.getLong(cursor.getColumnIndex(Constant.ACTIVITY_DURATION)));
+                MyTime beginTime = new MyTime();
+                beginTime.setYear(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_BEGIN_YEAR)));
+                beginTime.setMonth(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_BEGIN_MONTH)));
+                beginTime.setDay(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_BEGIN_DAY)));
+                beginTime.setHour(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_BEGIN_HOUR)));
+                beginTime.setMinute(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_BEGIN_MINUTE)));
+                beginTime.setSecond(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_BEGIN_SECOND)));
+                activities.setBeginTime(beginTime);
+                MyTime endTime = new MyTime();
+                endTime.setYear(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_END_YEAR)));
+                endTime.setMonth(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_END_MONTH)));
+                endTime.setDay(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_END_DAY)));
+                endTime.setHour(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_END_HOUR)));
+                endTime.setMinute(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_END_MINUTE)));
+                endTime.setSecond(cursor.getInt(cursor.getColumnIndex(Constant.ACTIVITY_END_SECOND)));
+                activities.setEndTime(endTime);
+                list.add(activities);
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+    //排序并加载对应的Tag
+    public List<History4View> loadDayHistory(MyTime today) throws Resources.NotFoundException{
+        int exist = 3;
+        MyTime yesterday = new MyTime(today.getYear(), today.getMonth(), today.getDay()-1);
+        List<Activities> list = new LinkedList<>();
+        List<Integer> setIdList = new ArrayList<>();
+        List<History4View> backList = new ArrayList<>();
+        try {
+            loadDayActivities(-1, yesterday, list, setIdList);
+        } catch (Resources.NotFoundException e) {
+            exist -= 1;
+        }
+        try {
+            loadDayActivities(0, today, list, setIdList);
+        } catch (Resources.NotFoundException e) {
+            exist -= 1;
+        }
+        if (exist == 0) {
+            throw new Resources.NotFoundException();
+        }
+        QuickSort.sort(list, 0, list.size() - 1);
+        for (int i = 0; i < list.size(); i++) {
+            Set set = loadSet(list.get(i).getSetId());
+            Tag tag = loadTag(set.getTagID());
+            History4View history4View = new History4View(list.get(i), tag, 0);
+            backList.add(history4View);
+        }
+        return backList;
+    }
+
+//    public List<History4View> loadMonthHistory() {
+    //获取月的第一天和最后一天，在此基础上减一和加一，PS:不要忘了first是endtime，last是begintime
+    //for () try catch
+    //写之前要分解
+    //分块，职能专一
+    //插入排序，从后插入
+
+    //adapter：在begintime变化时，算差值，再插入title
+    //异步加载？？？？？？
+//    }
+
 }

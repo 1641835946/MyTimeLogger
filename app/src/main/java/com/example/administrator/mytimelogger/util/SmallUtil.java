@@ -1,6 +1,8 @@
 package com.example.administrator.mytimelogger.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -47,7 +49,8 @@ public class SmallUtil {
 
     public static void changeColor(AppCompatImageView iv, Tag tag) {
         iv.setImageResource(tag.getIcon());
-        iv.setColorFilter(tag.getColor());
+        int color = MyApplication.getContext().getResources().getColor(tag.getColor());
+        iv.setColorFilter(color);
     }
 
     public static MyTime gainTime() {
@@ -87,8 +90,24 @@ public class SmallUtil {
         if (duration < 3600) {
             back = generatePart(duration / 60) + ":" + generatePart(duration % 60);
         } else {
-            back = generatePart(duration / 3600) + ":" + generatePart(duration % 3600);
+            back = generatePart(duration / 3600) + ":" + generatePart((duration % 3600) / 60);
         }
         return back;
     }
+
+    public static String yearMouthDay(MyTime time) {
+        String back = "";
+        if (time != null) {
+            back = time.getYear() + "." +
+                    time.getMonth() + "." +
+                    time.getDay();
+        }
+        return back;
+    }
+
+    public static String timepoint(MyTime time) {
+        String back = generatePart(time.getHour()) + ":" + generatePart(time.getHour());
+        return back;
+    }
+
 }
