@@ -1,7 +1,5 @@
 package com.example.administrator.mytimelogger.ActivityMain.ActivityActivities;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.AppCompatImageView;
@@ -14,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.administrator.mytimelogger.R;
-import com.example.administrator.mytimelogger.db.DB;
 import com.example.administrator.mytimelogger.model.ActivityItem4List;
 import com.example.administrator.mytimelogger.model.ActivityItem4View;
 import com.example.administrator.mytimelogger.model.MyTime;
@@ -41,11 +38,7 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
                     for (int i = 0; i < mList.size(); i++) {
                         if (setList.get(i).getState() == Constant.STATE_PLAY) {
                             //计算未结束的activities与之前所有同一群组的activities的总时长
-                            MyTime begin = setList.get(i).getSet().getBeginTime();
-                            MyTime end = SmallUtil.gainTime();
-                            int lastTime = setList.get(i).getSet().getDuration();
-                            int allTime = lastTime + SmallUtil.gainIntDuration(begin, end);
-                            String duration = SmallUtil.gainSetDuration(allTime);
+                            String duration = getStrDuration(i);
                             mList.get(i).getDuration().setText(duration);
                         }
                     }
@@ -56,10 +49,20 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
         }
     };
 
+    private String getStrDuration(int position) {
+        MyTime begin = setList.get(position).getSet().getBeginTime();
+        MyTime end = SmallUtil.gainTime();
+        int lastTime = setList.get(position).getSet().getDuration();
+        int allTime = lastTime + SmallUtil.gainIntDuration(begin, end);
+        return SmallUtil.gainSetDuration(allTime);
+    }
     private Thread mThread = new Thread(new Runnable() {
         @Override
         public void run() {
-            while(keepDoing) {
+            while(!stopThread) {
+                if (pauseDoing) {
+                    pauseThread();
+                }
                 Message msg = new Message();
                 msg.what = UPDATE_TEXT;
                 handler.sendMessage(msg);
@@ -100,9 +103,10 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
         viewHolder.tagNameTv.setText(setList.get(position).getTag().getName());
         int duration = setList.get(position).getSet().getDuration();
         if (duration == 0) {
+            Log.e("onBindViewHolder", "duration :" + duration);
             viewHolder.durationTv.setText("00:00:00");
         } else {
-            viewHolder.durationTv.setText(SmallUtil.gainSetDuration(duration));
+            viewHolder.durationTv.setText(getStrDuration(position));
         }
         int state = setList.get(position).getState();
         if (state == Constant.STATE_PLAY){
@@ -114,7 +118,7 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
         ActivityItem4List customSet4ListItem = new ActivityItem4List(viewHolder.durationTv,
                 viewHolder.pauseImgBtn);
         mList.add(customSet4ListItem);
-        startThread();
+//        startThread();
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,27 +144,29 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
     }
 
 
-    private boolean keepDoing = true;
-    public void setKeepDoing(boolean keepDoing) {
-        this.keepDoing = keepDoing;
+    private boolean stopThread = false;
+    private boolean pauseDoing = false;
+    public void setStopThread() {
+        stopThread = true;
     }
-//    public void isAlive() {
-//        if (mThread.isAlive()) {
-//            Log.e("isAlive", "yes");
-//        }
-//        Log.e("isAlive", "log");
-//    }
-    public void startThread() {
+    public void controlThread(boolean keep) {
+        if (keep) {
+            resumeThread();
+        } else {
+            pauseDoing = true;
+        }
+    }
+    //方法不了解不要乱用，很浪费时间找原因的
+    //首先：知道用这个方法的效果是怎样的，别不知道效果就用，毕竟谁知道那是Bug还是特色呢？
+    //其次：从demo学习怎么使用它。
+    public boolean isAlive() {
         if (mThread.isAlive()) {
+            return true;
         }
-        else {
-            mThread.start();
-//            try {
-//                mThread.start();
-//            } catch (IllegalThreadStateException e) {
-//                mThread.notify();
-//            }
-        }
+        return false;
+    }
+    public void startThread() {
+        mThread.start();
     }
 
     public void  resumeThread() {
@@ -168,31 +174,20 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
             synchronized(mThread) {
                 mThread.notify(); // 恢复线程
             }
+        } else {
+            mThread.start();
         }
     }
     public void pauseThread() {
-//            try {
-//                synchronized (mThread) {
-//                    mThread.wait();
-//                }
-//            } catch(InterruptedException e) {
-//                e.printStackTrace();
-//            }
-        Log.e("pauseThread", "first");
         synchronized(mThread) {
             try {
-                Log.e("currentThread id is ", "" + Thread.currentThread().getId());
-
-                Log.e("pauseThread", "second");
                 mThread.wait(); // 暂停线程
-                Log.e("pauseThread", "third");
             }catch(InterruptedException e) {
-                Log.e("pauseThread", "forth");
                 e.printStackTrace();
             }
         }
+        pauseDoing = false;
     }
-
 
     public void notifyChanged() {
         mList = new ArrayList<>();

@@ -72,7 +72,6 @@ public class SmallUtil {
             now = df.parse(end.toString());
             date= df.parse(begin.toString());
             int l= (int)((now.getTime()-date.getTime())/1000);
-            Log.e("gainLongDuration", "" + l);
             return l;
         } catch (ParseException e) {
             e.printStackTrace();
@@ -121,7 +120,7 @@ public class SmallUtil {
     }
 
     public static String timepoint(MyTime time) {
-        String back = generatePart(time.getHour()) + ":" + generatePart(time.getHour());
+        String back = generatePart(time.getHour()) + ":" + generatePart(time.getMinute());
         return back;
     }
 

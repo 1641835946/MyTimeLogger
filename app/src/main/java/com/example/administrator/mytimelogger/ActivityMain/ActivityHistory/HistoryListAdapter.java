@@ -96,8 +96,8 @@ public class HistoryListAdapter extends BaseAdapter implements PinnedSectionList
 //                itemViewHolder.commit.setText();
                 itemViewHolder.tagName.setText(item.getTag().getName());
                 int durationInt = (int)item.getActivities().getDuration();
-                Log.e("duration", "" + durationInt);
                 itemViewHolder.duration.setText(SmallUtil.gainHistoryDuration(durationInt));
+                Log.e("HistoryAdapter", item.toString());
                 break;
         }
 

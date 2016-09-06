@@ -72,17 +72,22 @@ public class AddActivitiesFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-//        activitiesAdapter.resumeThread();
+    public void onDestroyView() {
+        activitiesAdapter.setStopThread();
+        super.onDestroyView();
     }
 
+
+    //onXXX before after
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.e("onDestoryView", "before");
-        activitiesAdapter.setKeepDoing(false);
-//        activitiesAdapter.pauseThread();
+    public void onResume() {
+        super.onResume();
+        if (activitiesAdapter.isAlive()) {
+            activitiesAdapter.controlThread(true);
+        } else {
+            activitiesAdapter.startThread();
+        }
+//        activitiesAdapter.resumeThread();
     }
 
     @Override
@@ -93,6 +98,7 @@ public class AddActivitiesFragment extends Fragment {
         for (int i = 0; i < setList.size(); i++) {
             mDB.updateSet(setList.get(i).getSet());
         }
+        activitiesAdapter.controlThread(false);
         super.onPause();
     }
 

@@ -54,4 +54,13 @@ public class History4View {
     public void setYearMouthDay(String yearMouthDay) {
         this.yearMouthDay = yearMouthDay;
     }
+
+    @Override
+    public String toString() {
+        String back;
+        back = "begin:" + activities.getBeginTime()+
+                "end:"+ activities.getEndTime() +
+                "duration:" + activities.getDuration();
+        return back;
+    }
 }
