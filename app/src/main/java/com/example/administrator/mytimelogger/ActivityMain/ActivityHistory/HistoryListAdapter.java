@@ -51,6 +51,7 @@ public class HistoryListAdapter extends BaseAdapter implements PinnedSectionList
                     History4View thenTitle = new History4View(VIEWTYPE, then);
                     mDatas.add(i, thenTitle);
                     i++;
+                    beginStr = then;
                 }
             }
         } catch(Resources.NotFoundException e){
@@ -94,8 +95,9 @@ public class HistoryListAdapter extends BaseAdapter implements PinnedSectionList
                 itemViewHolder.end.setText(SmallUtil.timepoint(item.getActivities().getEndTime()));
 //                itemViewHolder.commit.setText();
                 itemViewHolder.tagName.setText(item.getTag().getName());
-                int durationInt = (int)(item.getActivities().getDuration()/1000);
-                itemViewHolder.duration.setText(SmallUtil.gainStringDuration(durationInt));
+                int durationInt = (int)item.getActivities().getDuration();
+                Log.e("duration", "" + durationInt);
+                itemViewHolder.duration.setText(SmallUtil.gainHistoryDuration(durationInt));
                 break;
         }
 

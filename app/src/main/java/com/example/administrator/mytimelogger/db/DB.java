@@ -352,6 +352,7 @@ public class DB {
 
     private void loadDayActivities(int whatDay,MyTime day, List<Activities> list, List<Integer> setIdList) throws Resources.NotFoundException{
         Cursor cursor;
+        boolean exist = false;
         switch (whatDay) {
             case -1:
                 cursor = loadYesterdayCursor(day);
@@ -363,6 +364,7 @@ public class DB {
         Activities activities;
         if (cursor.moveToFirst()) {
             do {
+                exist = true;
                 activities = new Activities();
                 int activitiesId = cursor.getInt(cursor.getColumnIndex("id"));
                 if (setIdList.contains(activitiesId)) {
@@ -393,10 +395,13 @@ public class DB {
         if (cursor != null) {
             cursor.close();
         }
+        if (!exist) {
+            throw new Resources.NotFoundException();
+        }
     }
     //排序并加载对应的Tag
     public List<History4View> loadDayHistory(MyTime today) throws Resources.NotFoundException{
-        int exist = 3;
+        int exist = 2;
         MyTime yesterday = new MyTime(today.getYear(), today.getMonth(), today.getDay()-1);
         List<Activities> list = new LinkedList<>();
         List<Integer> setIdList = new ArrayList<>();

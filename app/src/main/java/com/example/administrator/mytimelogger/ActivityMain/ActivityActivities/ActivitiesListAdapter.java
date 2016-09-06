@@ -45,7 +45,7 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
                             MyTime end = SmallUtil.gainTime();
                             int lastTime = setList.get(i).getSet().getDuration();
                             int allTime = lastTime + SmallUtil.gainIntDuration(begin, end);
-                            String duration = SmallUtil.gainStringDuration(allTime);
+                            String duration = SmallUtil.gainSetDuration(allTime);
                             mList.get(i).getDuration().setText(duration);
                         }
                     }
@@ -60,7 +60,6 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
         @Override
         public void run() {
             while(keepDoing) {
-//keepDoing
                 Message msg = new Message();
                 msg.what = UPDATE_TEXT;
                 handler.sendMessage(msg);
@@ -101,9 +100,9 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
         viewHolder.tagNameTv.setText(setList.get(position).getTag().getName());
         int duration = setList.get(position).getSet().getDuration();
         if (duration == 0) {
-            viewHolder.durationTv.setText("00:00");
+            viewHolder.durationTv.setText("00:00:00");
         } else {
-            viewHolder.durationTv.setText(SmallUtil.gainStringDuration(duration));
+            viewHolder.durationTv.setText(SmallUtil.gainSetDuration(duration));
         }
         int state = setList.get(position).getState();
         if (state == Constant.STATE_PLAY){
@@ -141,45 +140,59 @@ public class ActivitiesListAdapter extends RecyclerView.Adapter<ActivitiesListAd
     }
 
 
-    public void isAlive() {
-        if (mThread.isAlive()) {
-            Log.e("isAlive", "yes");
-        }
-        Log.e("isAlive", "log");
+    private boolean keepDoing = true;
+    public void setKeepDoing(boolean keepDoing) {
+        this.keepDoing = keepDoing;
     }
+//    public void isAlive() {
+//        if (mThread.isAlive()) {
+//            Log.e("isAlive", "yes");
+//        }
+//        Log.e("isAlive", "log");
+//    }
     public void startThread() {
-        Log.e("startThread", "1");
         if (mThread.isAlive()) {
-            Log.e("startThread", "2");
         }
         else {
-//            mThread.start();
-            try {
-                mThread.start();
-            } catch (IllegalThreadStateException e) {
+            mThread.start();
+//            try {
+//                mThread.start();
+//            } catch (IllegalThreadStateException e) {
+//                mThread.notify();
+//            }
+        }
+    }
+
+    public void  resumeThread() {
+        if (mThread.isAlive()) {
+            synchronized(mThread) {
+                mThread.notify(); // 恢复线程
             }
         }
     }
-    private boolean keepDoing;
-    public void setKeepDoing (boolean keepDoing) {
-        this.keepDoing = keepDoing;
-    }
-    public void stopThread() {
-        if (mThread.isAlive()) {
-            keepDoing = false;
+    public void pauseThread() {
+//            try {
+//                synchronized (mThread) {
+//                    mThread.wait();
+//                }
+//            } catch(InterruptedException e) {
+//                e.printStackTrace();
+//            }
+        Log.e("pauseThread", "first");
+        synchronized(mThread) {
+            try {
+                Log.e("currentThread id is ", "" + Thread.currentThread().getId());
+
+                Log.e("pauseThread", "second");
+                mThread.wait(); // 暂停线程
+                Log.e("pauseThread", "third");
+            }catch(InterruptedException e) {
+                Log.e("pauseThread", "forth");
+                e.printStackTrace();
+            }
         }
     }
-    //未使用，且应用wait(),notify...
-    public void suspendThread() {
-        if (mThread.isAlive()) {
-            mThread.suspend();
-        }
-    }
-    public void resumeThread() {
-        if (!mThread.isAlive()) {
-            mThread.resume();
-        }
-    }
+
 
     public void notifyChanged() {
         mList = new ArrayList<>();

@@ -74,8 +74,15 @@ public class AddActivitiesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        activitiesAdapter.setKeepDoing(true);
-        activitiesAdapter.startThread();
+//        activitiesAdapter.resumeThread();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.e("onDestoryView", "before");
+        activitiesAdapter.setKeepDoing(false);
+//        activitiesAdapter.pauseThread();
     }
 
     @Override
@@ -85,10 +92,7 @@ public class AddActivitiesFragment extends Fragment {
         mDB.updateSetOrder(view2Order(setList));
         for (int i = 0; i < setList.size(); i++) {
             mDB.updateSet(setList.get(i).getSet());
-            Log.e("onpause", i + " " + setList.get(i).getSet().getDuration());
         }
-        activitiesAdapter.stopThread();
-        activitiesAdapter.isAlive();
         super.onPause();
     }
 

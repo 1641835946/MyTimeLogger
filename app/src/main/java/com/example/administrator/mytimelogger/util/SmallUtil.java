@@ -80,20 +80,35 @@ public class SmallUtil {
         return 0;
     }
 
-    public static String gainStringDuration(MyTime begin, MyTime end) {
-        int duration = gainIntDuration(begin, end);
-        String back = gainStringDuration(duration);
-        return back;
-    }
-    public static String gainStringDuration(int duration) {
+    public static String gainSetDuration(int duration) {
         String back;
-        if (duration < 3600) {
-            back = generatePart(duration / 60) + ":" + generatePart(duration % 60);
-        } else {
-            back = generatePart(duration / 3600) + ":" + generatePart((duration % 3600) / 60);
-        }
+        back = generatePart(duration/3600) + ":" +
+                generatePart(duration%3600/60) + ":" +
+                generatePart(duration%60);
         return back;
     }
+
+    public static String gainHistoryDuration(int duration) {
+        String back;
+        back = generatePart(duration/3600) + ":" +
+                generatePart((duration%3600)/60);
+        return back;
+    }
+
+//    public static String gainStringDuration(MyTime begin, MyTime end) {
+//        int duration = gainIntDuration(begin, end);
+//        String back = gainStringDuration(duration);
+//        return back;
+//    }
+//    public static String gainStringDuration(int duration) {
+//        String back;
+//        if (duration < 3600) {
+//            back = generatePart(duration / 60) + ":" + generatePart(duration % 60);
+//        } else {
+//            back = generatePart(duration / 3600) + ":" + generatePart((duration % 3600) / 60);
+//        }
+//        return back;
+//    }
 
     public static String yearMouthDay(MyTime time) {
         String back = "";
