@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.administrator.mytimelogger.ActivityMain.ActivityHistory.HistoryListAdapter;
+import com.example.administrator.mytimelogger.ActivityMain.BaseFragment;
 import com.example.administrator.mytimelogger.R;
 import com.example.administrator.mytimelogger.ActivityMain.TagListAdapter;
 import com.example.administrator.mytimelogger.db.DB;
@@ -22,20 +24,20 @@ import com.example.administrator.mytimelogger.model.Tag;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.halfbit.pinnedsection.PinnedSectionListView;
+
 /**
  * Created by Administrator on 2016/8/22.
  */
-public class AddTagFragment extends Fragment {
+public class AddTagFragment extends BaseFragment {
 
     private RecyclerView recyclerView;
     private TagListAdapter adapter;
     private List<Tag> mDatas;
     private DB mDB;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tag, container, false);
+    public void initViews(View view) {
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_tag);
@@ -45,12 +47,15 @@ public class AddTagFragment extends Fragment {
 
             }
         });
-        return view;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public int getLayout() {
+        return R.layout.fragment_tag;
+    }
+
+    @Override
+    public void loadData() {
         mDB = DB.getInstance(getActivity());
         try {
             mDatas = mDB.loadTagList();
@@ -72,5 +77,4 @@ public class AddTagFragment extends Fragment {
         });
         recyclerView.setAdapter(adapter);
     }
-
 }

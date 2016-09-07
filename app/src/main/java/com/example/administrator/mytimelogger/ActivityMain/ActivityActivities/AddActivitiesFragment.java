@@ -16,6 +16,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.administrator.mytimelogger.ActivityMain.ActivityHistory.HistoryListAdapter;
+import com.example.administrator.mytimelogger.ActivityMain.BaseFragment;
 import com.example.administrator.mytimelogger.R;
 import com.example.administrator.mytimelogger.ActivityMain.TagListAdapter;
 import com.example.administrator.mytimelogger.db.DB;
@@ -31,10 +33,12 @@ import com.example.administrator.mytimelogger.util.SmallUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.halfbit.pinnedsection.PinnedSectionListView;
+
 /**
  * Created by Administrator on 2016/8/22.
  */
-public class AddActivitiesFragment extends Fragment {
+public class AddActivitiesFragment extends BaseFragment {
 
     private View view;
     private RecyclerView listRecycler;
@@ -51,21 +55,23 @@ public class AddActivitiesFragment extends Fragment {
     private TextView durationTv;
 
     /****************************************生命周期**********************************************/
-    @Nullable
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_activities, container, false);
+    public void initViews(View view) {
         listRecycler = (RecyclerView) view.findViewById(R.id.list_recycler_view);
         gridRecycler = (RecyclerView) view.findViewById(R.id.grid_recycler_view);
         pauseBtn = (ImageButton) view.findViewById(R.id.pause_img_btn);
         stopBtn = (ImageButton) view.findViewById(R.id.stop_img_btn);
         durationTv = (TextView) view.findViewById(R.id.duration);
-        return view;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public int getLayout() {
+        return R.layout.fragment_activities;
+    }
+
+    @Override
+    public void loadData() {
         mDB = DB.getInstance(getActivity());
         initList();
         initGrid();
