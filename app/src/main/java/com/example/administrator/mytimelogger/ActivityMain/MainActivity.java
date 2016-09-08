@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private TagListAdapter tagListAdapter;
+    Toolbar toolbar;
 
 //    private List<Tag> mDatas = init();
 
@@ -22,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         MyFragmentPagerAdapter pagerAdapter;
@@ -66,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
 //                Log.e("MainActivity", "onTabReselected");
 //            }
 //        });
+    }
+
+    public void setTitle(String title) {
+        toolbar.setTitle(title);
     }
 
 }

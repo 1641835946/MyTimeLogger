@@ -75,6 +75,7 @@ public class AddActivitiesFragment extends BaseFragment {
         mDB = DB.getInstance(getActivity());
         initList();
         initGrid();
+        getActivity().setTitle("Activities");
     }
 
     @Override

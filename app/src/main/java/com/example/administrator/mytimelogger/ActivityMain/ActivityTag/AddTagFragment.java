@@ -76,5 +76,6 @@ public class AddTagFragment extends BaseFragment {
             }
         });
         recyclerView.setAdapter(adapter);
+        getActivity().setTitle("类别");
     }
 }

@@ -39,5 +39,6 @@ public class HistoryFragment extends BaseFragment {
     public void loadData() {
         HistoryListAdapter adapter = new HistoryListAdapter(getActivity());
         psListView.setAdapter(adapter);
+        getActivity().setTitle("History");
     }
 }

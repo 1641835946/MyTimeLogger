@@ -1,3 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="1256c10604bb098490eab070d76754ac5ceab35c">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\com.android.support-appcompat-v7-24.1.1_876d5397d68c13f7c12851397af200b8636db153.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="f62e763609f65e47dc6c498760a4accf02776788">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\com.android.support-support-vector-drawable-24.1.1_42a7726cb3ab540cff4433e59e192b624cad7e0a.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="6d7d803871e3203465f71a163e7af104f807b446">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\com.android.support-support-v4-24.1.1_f9802fa6b9c128b34e555050cad3d424e1646de3.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\support-v13\24.1.1\jars\libs\internal_impl-24.1.1.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="ca74722504f90166103d01edcdfdb93192eb1cba">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\internal_impl-24.1.1_d4dfb003797711b4da2ed3e7323cee7de7479253.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\design\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="e195bd694d5389acfba27ff4fdfa64c4c65b2c05">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\com.android.support-design-24.1.1_0d90b32ff82f05988b39bf86774fe6b5e4481d17.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\im.dino\dbinspector\3.2.4\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="2ea23ea9eddc169f8c3353266b450869fe81588d">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\im.dino-dbinspector-3.2.4_a3025ba3801af22fbbf471fee9433b4084c7da4e.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="c936c1bd42f0c018c18920c7bec619ef056b24f8">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\com.android.support-animated-vector-drawable-24.1.1_d58ab876ad8c2506a11cce00d9fa722e1bbab59c.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="787871951412550519b0222aba3c9df4cea49875">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\com.android.support-recyclerview-v7-24.1.1_2f2b61a1baf41533f88a7e62f5882d8297c625ad.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\de.halfbit\pinned-section-listview\1.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="78ef3f5c5c9254e8878303d51e074c9a831e8076">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\de.halfbit-pinned-section-listview-1.0.0_6095f8f60f6f5e8cedd2ab8eb7bfc6f3fa40e36e.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\24.1.1\support-annotations-24.1.1.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="3af19f153122737b372622fa6c81dd11a1c6b999">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\support-annotations-24.1.1_624ffef837a64c3afe9bb9fe8426f6ccaa054bc1.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\support-v13\24.1.1\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="327f68d58bb39fb8b585150596b313541f8fdb87">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\com.android.support-support-v13-24.1.1_170a88eeacb10532eb6bab4150c16f9fb69524a2.jar" />
+    </item>
+    <item
+        jar="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.1.1\jars\libs\internal_impl-24.1.1.jar"
+        jumboMode="false"
+        revision="24.0.1"
+        sha1="f78c2f395cb096f9dc1dc07e729922b8fcd3c4f5">
+        <dex dex="C:\Users\Administrator\Documents\GitHub\old\MyTimeLogger\app\build\intermediates\pre-dexed\debug\internal_impl-24.1.1_253730aeec5f100ae6ea0285c074ae0b969ab208.jar" />
+    </item>
+
+</items>
