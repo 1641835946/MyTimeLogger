@@ -544,4 +544,11 @@ public class DB {
                 new String[] {""+tagId});
         return setIdList;
     }
+
+    public void addAboutTag(Tag tag) {
+        tag.setId(saveTag(tag));
+        List<Integer> tagOrder = loadTagOrder();
+        tagOrder.add(tag.getId());
+        updateTagOrder(tagOrder);
+    }
 }

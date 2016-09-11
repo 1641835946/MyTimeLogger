@@ -58,14 +58,13 @@ public class Tag implements Serializable{
         this.color = color;
     }
 
+    /**不比较id，用于EditAddTagActivity中添加或修改Tag*/
     @Override
     public boolean equals(Object obj) {//这种情况需要自己写吗？
         Tag thatTag = (Tag) obj;
         if (this == thatTag) {
             return true;
         } else if (this.getName().equals(thatTag.getName())){
-            return false;
-        } else if (this.id != thatTag.id) {
             return false;
         } else if (this.color != thatTag.color) {
             return false;
