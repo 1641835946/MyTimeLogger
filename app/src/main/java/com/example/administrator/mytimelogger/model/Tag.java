@@ -1,9 +1,11 @@
 package com.example.administrator.mytimelogger.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2016/8/22.
  */
-public class Tag {
+public class Tag implements Serializable{
 
     private int id;
     private String name;
@@ -54,5 +56,22 @@ public class Tag {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    @Override
+    public boolean equals(Object obj) {//这种情况需要自己写吗？
+        Tag thatTag = (Tag) obj;
+        if (this == thatTag) {
+            return true;
+        } else if (this.getName().equals(thatTag.getName())){
+            return false;
+        } else if (this.id != thatTag.id) {
+            return false;
+        } else if (this.color != thatTag.color) {
+            return false;
+        } else if (this.icon != thatTag.icon) {
+            return false;
+        }
+        return true;
     }
 }

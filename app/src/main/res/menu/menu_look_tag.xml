@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <item android:id="@+id/delete"
+        android:title="delete"
+        android:icon="@drawable/ic_action_trash"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/update"
+        android:title="update"
+        android:icon="@drawable/ic_action_edit"
+        app:showAsAction="ifRoom"/>
+</menu>

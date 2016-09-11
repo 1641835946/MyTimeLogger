@@ -8,8 +8,8 @@
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/iv"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
+        android:layout_width="@dimen/small_icon"
+        android:layout_height="@dimen/small_icon"
         android:layout_gravity="center_horizontal"
         />
 
@@ -17,7 +17,7 @@
         android:id="@+id/tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/text_size"
+        android:textSize="@dimen/text_small"
         android:layout_gravity="center_horizontal"
         />
 
