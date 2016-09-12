@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="country_names">
+
+        <item>Default</item>
+        <item>Eat and Cook</item>
+        <item>Family</item>
+        <item>Finance and Shopping</item>
+        <item>Home and Personal Care</item>
+        <item>Music</item>
+        <item>Argentina</item>
+        <item>Armenia</item>
+        <item>Australia</item>
+        <item>Austria</item>
+    </string-array>
+</resources>

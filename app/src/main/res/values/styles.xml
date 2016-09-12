@@ -19,7 +19,7 @@
 
     <style name="set_button" parent="Base.Widget.AppCompat.ImageButton">
         <item name="android:layout_centerVertical">true</item>
-        <item name="android:layout_margin">@dimen/margin</item>
+        <item name="android:layout_margin">@dimen/middle_margin</item>
     </style>
 
     <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">

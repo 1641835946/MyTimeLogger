@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:support-v13:+'
     debugCompile 'im.dino:dbinspector:3.2.4@aar'
     compile 'de.halfbit:pinned-section-listview:1.0.0'
+    compile 'com.tonicartos:superslim:0.4.+'
 }

@@ -11,6 +11,8 @@
     <string name="icon">图标</string>
 
     <string name="empty_history">这段时间内没有任何记录</string>
+    <string name="select_icon_hint">选择图标</string>
+    <string name="cancel">取消</string>
 
     <string name="dbinspector_app_name">DBInspector</string>
 

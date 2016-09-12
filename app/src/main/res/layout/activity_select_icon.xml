@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/select_icon_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/large_margin"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/select_icon_hint"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_select_icon"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_below="@id/select_icon_tv"/>
+
+    <Button
+        android:id="@+id/select_icon_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/middle_margin"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/recycler_select_icon"
+        android:text="@string/cancel"/>
+</RelativeLayout>

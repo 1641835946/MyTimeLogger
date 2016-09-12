@@ -24,6 +24,8 @@
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".Activity.TagLookingActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".Activity.SelectIconActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
