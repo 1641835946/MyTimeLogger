@@ -26,7 +26,7 @@ public class EditAddTagActivity extends AppCompatActivity {
     private Button selectColor;
     private AppCompatImageView selectIcon;
 //    private boolean newOne = false;//为true时，不必比较tag和newTag
-//    private boolean change = false;//当newOne为false时，需比较是否改变了。
+//    private boolean change = false;//当newOne为false时，需比较是否改变了�?
     private Tag tag;
     private Tag newTag;
     private DB mDB;
